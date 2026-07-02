@@ -1,0 +1,148 @@
+/* ВЕКТОР: Ортонорма — стили. Тёмно-синяя лаборатория, неоновые векторы. */
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; color: #dbe4ff;
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: radial-gradient(1200px 800px at 30% -10%, #16224a 0%, #0b1020 55%, #070b16 100%);
+}
+.hidden { display: none !important; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ---------- экраны ---------- */
+.screen { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+
+.menu-box { max-width: 440px; margin: 6vh auto; text-align: center; }
+.menu-box h1 { margin: 10px 0 4px; letter-spacing: 2px; }
+.tagline { color: #8fa1d0; margin: 0 0 26px; }
+.credits { color: #55648f; font-size: 13px; margin-top: 26px; }
+
+button.big {
+  display: block; width: 100%; margin: 10px 0; padding: 13px 18px;
+  font-size: 17px; border-radius: 12px; border: 1px solid #2a3a6b;
+  background: #131c38; color: #dbe4ff; transition: transform .1s, background .15s;
+}
+button.big:hover:not(:disabled) { background: #1a2750; transform: translateY(-1px); }
+button.big.primary { background: #2563eb; border-color: #2563eb; font-weight: 700; }
+button.big.primary:hover { background: #3b76f6; }
+button.big:disabled { opacity: .45; cursor: default; }
+
+/* робот-логотип */
+.logo-bot { width: 90px; margin: 0 auto; }
+.bot-antenna { width: 4px; height: 18px; background: #38bdf8; margin: 0 auto;
+  border-radius: 2px; box-shadow: 0 -6px 12px #38bdf8; }
+.bot-body { width: 74px; height: 60px; margin: 0 auto; border-radius: 22px;
+  background: linear-gradient(#3a4a80, #222f5c); border: 2px solid #4a5c9b;
+  display: flex; align-items: center; justify-content: center; }
+.bot-eye { width: 26px; height: 26px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #baf3ff, #38bdf8 60%, #0369a1);
+  box-shadow: 0 0 14px #38bdf8; }
+
+/* ---------- выбор уровня ---------- */
+#level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px; margin: 18px 0 22px; }
+.lvl-card { border: 1px solid #2a3a6b; border-radius: 12px; padding: 12px 14px;
+  background: #121a34; cursor: pointer; transition: background .15s; }
+.lvl-card:hover { background: #1a2750; }
+.lvl-card.locked { opacity: .4; cursor: default; }
+.lvl-card .deck { font-size: 12px; color: #8fa1d0; }
+.lvl-card .stars { color: #fbbf24; letter-spacing: 2px; }
+
+/* ---------- игровой экран ---------- */
+#hud { display: flex; gap: 14px; align-items: center; padding: 8px 4px;
+  font-size: 15px; color: #9fb0dd; }
+#hud-name { color: #dbe4ff; font-weight: 700; }
+.hud-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+#hud-stars { color: #fbbf24; }
+#hud button { background: #131c38; color: #dbe4ff; border: 1px solid #2a3a6b;
+  border-radius: 8px; padding: 5px 10px; font-size: 15px; }
+
+#room { display: block; width: 100%; max-width: 884px; border-radius: 14px;
+  border: 1px solid #23305c; background: #0d1430; touch-action: none; cursor: pointer; }
+#room-tip { color: #55648f; font-size: 13px; padding: 6px 2px; }
+
+#dialogue { position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
+  width: min(720px, 92vw); background: #101a3add; border: 1px solid #35509f;
+  border-radius: 14px; padding: 14px 18px; backdrop-filter: blur(4px); cursor: pointer; }
+#dlg-text { font-size: 16px; line-height: 1.5; }
+#dlg-next { text-align: right; color: #7f92c8; font-size: 12px; margin-top: 6px; }
+
+/* ---------- модальные окна ---------- */
+.modal { position: fixed; inset: 0; background: #04060fd0; display: flex;
+  align-items: center; justify-content: center; z-index: 50; padding: 12px; }
+
+.puzzle-box, .jr-box, .cer-box { background: #0f1730; border: 1px solid #2a3a6b;
+  border-radius: 16px; max-width: 900px; width: 100%; max-height: 94vh; overflow: auto; }
+.puzzle-head { display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-bottom: 1px solid #22305c; font-size: 17px; }
+.puzzle-head button { background: none; border: none; color: #8fa1d0; font-size: 18px; }
+.puzzle-body { display: flex; gap: 14px; padding: 14px; flex-wrap: wrap; }
+#pz-canvas { border-radius: 12px; background: #0d1430; border: 1px solid #23305c;
+  touch-action: none; max-width: 100%; }
+.puzzle-side { flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 10px; }
+.goal { background: #14224e; border-left: 4px solid #2563eb; border-radius: 0 10px 10px 0;
+  padding: 10px 12px; font-size: 15px; line-height: 1.45; }
+.info { background: #101a3a; border-radius: 10px; padding: 10px 12px;
+  font-size: 15px; line-height: 1.55; min-height: 64px; }
+.info b { color: #7dd3fc; font-family: ui-monospace, Consolas, monospace; }
+#pz-buttons { display: flex; flex-direction: column; gap: 8px; }
+#pz-buttons button { padding: 10px 12px; font-size: 15px; border-radius: 10px;
+  border: 1px solid #2a3a6b; background: #17224a; color: #dbe4ff; text-align: left; }
+#pz-buttons button:hover:not(:disabled) { background: #20305f; }
+#pz-buttons button:disabled { opacity: .4; }
+.msg { min-height: 22px; color: #fbbf24; font-size: 14px; }
+.msg.good { color: #4ade80; }
+.hintbtn { align-self: flex-start; background: none; border: 1px dashed #4a5c9b;
+  color: #9fb0dd; border-radius: 10px; padding: 7px 12px; font-size: 14px; }
+.hinttext { color: #cbd5f5; font-size: 14px; line-height: 1.5; }
+.hinttext .h { background: #14224e; border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
+
+/* церемония */
+.cer-box { max-width: 520px; text-align: center; padding: 22px; }
+.cer-stars { font-size: 40px; letter-spacing: 8px; margin: 6px 0 2px; }
+.cer-stars .off { opacity: .22; }
+.star-label { font-size: 13px; color: #8fa1d0; margin-bottom: 12px; letter-spacing: normal; }
+.cer-journal { background: #101a3a; border-radius: 12px; padding: 12px;
+  text-align: left; margin: 12px 0; font-size: 14px; }
+.cer-journal .frm { font-family: ui-monospace, Consolas, monospace; color: #7dd3fc;
+  margin-top: 6px; }
+.cer-question { text-align: left; margin: 10px 0; }
+.cer-question .q { font-weight: 700; margin-bottom: 8px; }
+.cer-question button { display: block; width: 100%; text-align: left; margin: 6px 0;
+  padding: 10px 12px; border-radius: 10px; border: 1px solid #2a3a6b;
+  background: #17224a; color: #dbe4ff; font-size: 15px; }
+.cer-question button:hover:not(:disabled) { background: #20305f; }
+.cer-question button.right { background: #14532d; border-color: #22c55e; }
+.cer-question button.wrong { background: #58151c; border-color: #ef4444; }
+
+/* журнал */
+.jr-box { max-width: 640px; }
+#jr-list { padding: 14px; }
+.jr-entry { border: 1px solid #22305c; border-radius: 12px; padding: 12px 14px;
+  margin-bottom: 10px; background: #101a3a; }
+.jr-entry h3 { margin: 0 0 6px; font-size: 16px; color: #7dd3fc; }
+.jr-entry .words { font-size: 14px; color: #cbd5f5; line-height: 1.5; }
+.jr-entry .frm { font-family: ui-monospace, Consolas, monospace; color: #a5f3fc;
+  background: #0d1430; border-radius: 8px; padding: 7px 10px; margin-top: 8px;
+  font-size: 14px; white-space: pre-wrap; }
+.jr-entry .code { font-family: ui-monospace, Consolas, monospace; color: #86efac;
+  font-size: 13px; margin-top: 6px; white-space: pre-wrap; }
+.jr-empty { color: #55648f; text-align: center; padding: 30px 0; }
+.how-text { padding: 14px 18px; font-size: 15px; line-height: 1.55; }
+
+/* конвейер и кодовая комната — DOM-элементы поверх канваса */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { padding: 9px 12px; border-radius: 10px; border: 1px solid #4a5c9b;
+  background: #1b2a5c; font-family: ui-monospace, Consolas, monospace;
+  font-size: 14px; cursor: pointer; user-select: none; }
+.chip:hover { background: #24377a; }
+.slotrow { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+.slot { min-width: 118px; min-height: 40px; border: 2px dashed #35509f; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  color: #7f92c8; padding: 4px; }
+.slot .chip { margin: 0; }
+.codeline { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.codeline .txt { flex: 1; font-family: ui-monospace, Consolas, monospace; font-size: 14px;
+  background: #0d1430; border: 1px solid #22305c; border-radius: 8px; padding: 9px 12px;
+  color: #a5f3fc; }
+.codeline button { width: 34px; height: 34px; border-radius: 8px; border: 1px solid #2a3a6b;
+  background: #17224a; color: #dbe4ff; }

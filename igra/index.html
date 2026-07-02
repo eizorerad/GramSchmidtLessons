@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ВЕКТОР: Ортонорма</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ЭКРАН: главное меню -->
+<div id="scr-menu" class="screen">
+  <div class="menu-box">
+    <div class="logo-bot" aria-hidden="true">
+      <div class="bot-antenna"></div>
+      <div class="bot-body"><div class="bot-eye"></div></div>
+    </div>
+    <h1>ВЕКТОР: Ортонорма</h1>
+    <p class="tagline">Почини координатное ядро корабля —<br>и пойми Грам–Шмидт руками.</p>
+    <button class="big primary" id="btn-continue">▶ Играть</button>
+    <button class="big" id="btn-levels">Палубы</button>
+    <button class="big" id="btn-journal-menu">📓 Журнал формул</button>
+    <button class="big" id="btn-endless" disabled>∞ Бесконечная лаборатория 🔒</button>
+    <button class="big" id="btn-how">Как играть</button>
+    <p class="credits">По курсу GramSchmidtLessons · прототип «Ступень A»</p>
+  </div>
+</div>
+
+<!-- ЭКРАН: выбор уровня -->
+<div id="scr-levels" class="screen hidden">
+  <h2>Палубы корабля</h2>
+  <div id="level-grid"></div>
+  <button class="big" id="btn-back-menu">← В меню</button>
+</div>
+
+<!-- ЭКРАН: игра (комната) -->
+<div id="scr-game" class="screen hidden">
+  <div id="hud">
+    <span id="hud-deck"></span>
+    <span id="hud-name"></span>
+    <span class="hud-right">
+      <span id="hud-stars">★ 0</span>
+      <button id="btn-journal">📓</button>
+      <button id="btn-map">🗺</button>
+    </span>
+  </div>
+  <canvas id="room" width="884" height="544"></canvas>
+  <div id="dialogue" class="hidden">
+    <div id="dlg-text"></div>
+    <div id="dlg-next">нажми или пробел ▸</div>
+  </div>
+  <div id="room-tip">WASD / стрелки / клик по полу — идти · консоль — головоломка · открытая дверь — дальше</div>
+</div>
+
+<!-- ОВЕРЛЕЙ: головоломка -->
+<div id="puzzle" class="modal hidden">
+  <div class="puzzle-box">
+    <div class="puzzle-head">
+      <b id="pz-title"></b>
+      <button id="pz-close">✕</button>
+    </div>
+    <div class="puzzle-body">
+      <canvas id="pz-canvas" width="520" height="440"></canvas>
+      <div class="puzzle-side">
+        <div id="pz-goal" class="goal"></div>
+        <div id="pz-info" class="info"></div>
+        <div id="pz-buttons"></div>
+        <div id="pz-msg" class="msg"></div>
+        <button id="pz-hint" class="hintbtn">💡 Подсказка</button>
+        <div id="pz-hint-text" class="hinttext"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ОВЕРЛЕЙ: церемония (звёзды + вопрос) -->
+<div id="ceremony" class="modal hidden">
+  <div class="cer-box">
+    <h2 id="cer-title">Палуба починена!</h2>
+    <div id="cer-stars" class="cer-stars"></div>
+    <div id="cer-journal" class="cer-journal"></div>
+    <div id="cer-question" class="cer-question"></div>
+    <button class="big primary" id="cer-next">Дальше ▸</button>
+  </div>
+</div>
+
+<!-- ОВЕРЛЕЙ: журнал -->
+<div id="journal" class="modal hidden">
+  <div class="jr-box">
+    <div class="puzzle-head"><b>📓 Бортовой журнал формул</b><button id="jr-close">✕</button></div>
+    <div id="jr-list"></div>
+  </div>
+</div>
+
+<!-- ОВЕРЛЕЙ: как играть -->
+<div id="howto" class="modal hidden">
+  <div class="jr-box">
+    <div class="puzzle-head"><b>Как играть</b><button id="how-close">✕</button></div>
+    <div class="how-text">
+      <p><b>Ходи</b> по палубе: WASD, стрелки или клик по полу.</p>
+      <p><b>Встань на синюю консоль</b> — откроется головоломка. Перетаскивай кончики
+      стрелок мышкой, жми кнопки операций. Числа справа считаются вживую.</p>
+      <p><b>Реши головоломку</b> — дверь справа откроется. Дойди до неё.</p>
+      <p>За уровень можно получить до <b>трёх звёзд</b>: ★ решил · ★ без подсказок ·
+      ★ ответил на вопрос о смысле.</p>
+      <p>Каждая починенная палуба добавляет запись в <b>журнал формул</b> —
+      это твой конспект, заработанный руками.</p>
+      <p>Застрял? Кнопка 💡 даёт подсказки слоями — от намёка до ответа.</p>
+    </div>
+  </div>
+</div>
+
+<script src="math.js"></script>
+<script src="levels.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
