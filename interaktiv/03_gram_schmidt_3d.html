@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Грам–Шмидт в 3D — интерактив</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+         margin: 20px auto; max-width: 1150px; padding: 0 14px; color: #1f2430; }
+  h1 { font-size: 1.4em; margin: 6px 0 2px; }
+  .sub { color: #5b6474; margin: 0 0 14px; }
+  .wrap { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  canvas { border: 1px solid #d8dce6; border-radius: 12px; touch-action: none;
+           cursor: grab; background: #fff; max-width: 100%; }
+  .panel { flex: 1; min-width: 330px; font-size: 15px; }
+  .grp { background: #f4f6fa; border-radius: 10px; padding: 10px 14px; margin: 8px 0; }
+  input[type=number] { width: 58px; font-size: 15px; padding: 4px; border: 1px solid #c9cedb;
+                       border-radius: 6px; font-family: ui-monospace, Consolas, monospace; }
+  label.chk { display: inline-block; margin-right: 16px; user-select: none; }
+  .num { font-family: ui-monospace, Consolas, monospace; font-weight: 600; }
+  .cV1 { color: #2563eb; } .cV2 { color: #d97706; } .cV3 { color: #db2777; }
+  .cE1 { color: #059669; } .cE2 { color: #9333ea; } .cE3 { color: #0e7490; }
+  .warn { color: #b45309; font-weight: 600; }
+  button { font-size: 15px; padding: 8px 14px; border-radius: 10px;
+           border: 1px solid #c9cedb; background: #fff; cursor: pointer; margin-right: 8px; }
+  a { color: #2563eb; }
+</style>
+</head>
+<body>
+<h1>Грам–Шмидт в 3D</h1>
+<p class="sub"><b>Вращай пространство мышкой</b> (тащи по канвасу).
+Меняй числа векторов — всё пересчитывается мгновенно. К урокам 07–09.</p>
+
+<div class="wrap">
+  <canvas id="cv" width="620" height="580"></canvas>
+  <div class="panel">
+    <div class="grp">
+      <b>Исходные векторы</b> (по умолчанию — пример из уроков 07–08):<br><br>
+      <span class="cV1"><b>v1</b></span> =
+        [<input type="number" id="v10" step="1" value="1">,
+         <input type="number" id="v11" step="1" value="1">,
+         <input type="number" id="v12" step="1" value="1">]<br>
+      <span class="cV2"><b>v2</b></span> =
+        [<input type="number" id="v20" step="1" value="2">,
+         <input type="number" id="v21" step="1" value="0">,
+         <input type="number" id="v22" step="1" value="1">]<br>
+      <span class="cV3"><b>v3</b></span> =
+        [<input type="number" id="v30" step="1" value="3">,
+         <input type="number" id="v31" step="1" value="1">,
+         <input type="number" id="v32" step="1" value="-1">]<br><br>
+      <button id="bDemo">пример урока</button>
+      <button id="bDep">подсунуть зависимый v3</button>
+    </div>
+    <div class="grp">
+      <b>Что показывать:</b><br>
+      <label class="chk"><input type="checkbox" id="showV" checked> кривые v1, v2, v3</label>
+      <label class="chk"><input type="checkbox" id="showE" checked> результат e1, e2, e3</label>
+    </div>
+    <div class="grp" id="out"></div>
+    <div class="grp" id="checkbox2"></div>
+    <p><a href="02_gram_schmidt_2d.html">← 2D по шагам</a> &nbsp;
+       <a href="index.html">все тренажёры</a> &nbsp;
+       <a href="04_zerkalo.html">дальше: зеркало →</a></p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const CX = cv.width/2, CY = cv.height/2, S = 78;
+
+let yaw = 0.6, pitch = 0.42;    // углы поворота камеры
+
+// ---------- векторная арифметика в 3D ----------
+const dot3 = (a,b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+const norm3 = a => Math.sqrt(dot3(a,a));
+const sub3 = (a,b) => [a[0]-b[0], a[1]-b[1], a[2]-b[2]];
+const mul3 = (k,a) => [k*a[0], k*a[1], k*a[2]];
+
+// Грам-Шмидт (тот же алгоритм, что в уроке 09, только на JavaScript)
+function gsBasis(vs) {
+  const B = vs.map(v => v.slice());          // копия
+  for (let j = 0; j < B.length; j++) {
+    for (let i = 0; i < j; i++) {
+      B[j] = sub3(B[j], mul3(dot3(B[j], B[i]), B[i]));   // минус тень на e_i
+    }
+    const n = norm3(B[j]);
+    B[j] = n > 1e-10 ? mul3(1/n, B[j]) : [0,0,0];        // нормализуем или ноль
+  }
+  return B;
+}
+
+// ---------- проекция 3D -> экран (поворот yaw вокруг вертикали, pitch наклон) ----------
+function project(p) {
+  const [x, y, z] = p;
+  const cy = Math.cos(yaw), sy = Math.sin(yaw);
+  const cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const x1 = x*cy + z*sy, z1 = -x*sy + z*cy;   // поворот вокруг оси y
+  const y2 = y*cp - z1*sp, z2 = y*sp + z1*cp;  // наклон
+  return { x: CX + x1*S, y: CY - y2*S, depth: z2 };
+}
+
+function line3(a, b, color, width, dash, alpha) {
+  const p = project(a), q = project(b);
+  ctx.save();
+  ctx.globalAlpha = alpha == null ? 1 : alpha;
+  ctx.strokeStyle = color; ctx.lineWidth = width;
+  if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+  ctx.restore();
+}
+function arrow3(v, color, width, alpha, name) {
+  const O = project([0,0,0]), p = project(v);
+  ctx.save();
+  ctx.globalAlpha = alpha == null ? 1 : alpha;
+  ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = width;
+  ctx.beginPath(); ctx.moveTo(O.x,O.y); ctx.lineTo(p.x,p.y); ctx.stroke();
+  const ang = Math.atan2(p.y-O.y, p.x-O.x), L = 11;
+  ctx.beginPath(); ctx.moveTo(p.x,p.y);
+  ctx.lineTo(p.x - L*Math.cos(ang-0.44), p.y - L*Math.sin(ang-0.44));
+  ctx.lineTo(p.x - L*Math.cos(ang+0.44), p.y - L*Math.sin(ang+0.44));
+  ctx.closePath(); ctx.fill();
+  if (name) { ctx.font = "bold 15px system-ui"; ctx.fillText(name, p.x+8, p.y-6); }
+  ctx.restore();
+}
+
+function readVectors() {
+  const g = id => parseFloat(document.getElementById(id).value) || 0;
+  return [[g("v10"),g("v11"),g("v12")],
+          [g("v20"),g("v21"),g("v22")],
+          [g("v30"),g("v31"),g("v32")]];
+}
+
+const f = x => (Math.round(x*1000)/1000).toFixed(3);
+const fv = v => `[${f(v[0])}, ${f(v[1])}, ${f(v[2])}]`;
+
+function draw() {
+  ctx.clearRect(0,0,cv.width,cv.height);
+
+  // оси мировой системы координат
+  const A = 3.2;
+  line3([-A,0,0],[A,0,0], "#c9cedb", 1.5); line3([0,-A,0],[0,A,0], "#c9cedb", 1.5);
+  line3([0,0,-A],[0,0,A], "#c9cedb", 1.5);
+  const lx = project([A,0,0]), ly = project([0,A,0]), lz = project([0,0,A]);
+  ctx.fillStyle = "#8b93a5"; ctx.font = "13px system-ui";
+  ctx.fillText("x", lx.x+5, lx.y); ctx.fillText("y", ly.x+5, ly.y); ctx.fillText("z", lz.x+5, lz.y);
+
+  const vs = readVectors();
+  const E = gsBasis(vs);
+
+  const showV = document.getElementById("showV").checked;
+  const showE = document.getElementById("showE").checked;
+  const colV = ["#2563eb", "#d97706", "#db2777"];
+  const colE = ["#059669", "#9333ea", "#0e7490"];
+
+  if (showV) vs.forEach((v,i) => arrow3(v, colV[i], 3, showE ? 0.35 : 1, "v"+(i+1)));
+  if (showE) E.forEach((e,i) => { if (norm3(e) > 0.5) arrow3(e, colE[i], 4.5, 1, "e"+(i+1)); });
+
+  // числовой вывод
+  let html = "<b>После Грама–Шмидта:</b><br>";
+  const cls = ["cE1","cE2","cE3"];
+  E.forEach((e,i) => {
+    if (norm3(e) > 0.5)
+      html += `<span class="${cls[i]}">e${i+1} = <span class="num">${fv(e)}</span></span><br>`;
+    else
+      html += `<span class="warn">e${i+1} = [0, 0, 0] — вектор v${i+1} ЗАВИСИМЫЙ
+               (не добавил нового направления)</span><br>`;
+  });
+  document.getElementById("out").innerHTML = html;
+
+  // проверка: все длины 1, все пары перпендикулярны
+  let chk = "<b>Проверка (урок 07):</b> ";
+  const parts = [];
+  E.forEach((e,i) => { if (norm3(e) > 0.5) parts.push(`|e${i+1}|=${f(norm3(e))}`); });
+  for (let j=0; j<3; j++) for (let i=0; i<j; i++)
+    if (norm3(E[i])>0.5 && norm3(E[j])>0.5)
+      parts.push(`e${i+1}·e${j+1}=${f(dot3(E[i],E[j]))}`);
+  chk += parts.join(", ");
+  document.getElementById("checkbox2").innerHTML = chk +
+    "<br><span style='color:#5b6474'>Единицы и нули — значит всё правильно.</span>";
+}
+
+// ---------- вращение мышью ----------
+let rot = null;
+function evPos(ev) {
+  const r = cv.getBoundingClientRect();
+  const t = ev.touches ? ev.touches[0] : ev;
+  return { x: (t.clientX-r.left)*cv.width/r.width, y: (t.clientY-r.top)*cv.height/r.height };
+}
+cv.addEventListener("mousedown", e => { rot = evPos(e); });
+cv.addEventListener("touchstart", e => { rot = evPos(e); e.preventDefault(); }, {passive:false});
+function moveH(e) {
+  if (!rot) return;
+  const p = evPos(e);
+  yaw   += (p.x - rot.x) * 0.008;
+  pitch += (p.y - rot.y) * 0.008;
+  pitch = Math.max(-1.4, Math.min(1.4, pitch));
+  rot = p; draw();
+  if (e.touches) e.preventDefault();
+}
+cv.addEventListener("mousemove", moveH);
+cv.addEventListener("touchmove", moveH, {passive:false});
+window.addEventListener("mouseup", () => rot = null);
+window.addEventListener("touchend", () => rot = null);
+
+// поля ввода и кнопки
+document.querySelectorAll("input[type=number]").forEach(i => i.addEventListener("input", draw));
+document.querySelectorAll("input[type=checkbox]").forEach(i => i.addEventListener("change", draw));
+document.getElementById("bDemo").onclick = () => {
+  setV([[1,1,1],[2,0,1],[3,1,-1]]); draw();
+};
+document.getElementById("bDep").onclick = () => {
+  // v3 = v1 + v2 — зависимый! Должен обнулиться (урок 07, раздел 7)
+  const vs = readVectors();
+  setV([vs[0], vs[1], [vs[0][0]+vs[1][0], vs[0][1]+vs[1][1], vs[0][2]+vs[1][2]]]);
+  draw();
+};
+function setV(vs) {
+  const ids = [["v10","v11","v12"],["v20","v21","v22"],["v30","v31","v32"]];
+  vs.forEach((v,i) => v.forEach((x,j) => document.getElementById(ids[i][j]).value = x));
+}
+
+draw();
+</script>
+</body>
+</html>

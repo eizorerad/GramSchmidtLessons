@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тень (проекция) — интерактив</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+         margin: 20px auto; max-width: 1100px; padding: 0 14px; color: #1f2430; }
+  h1 { font-size: 1.4em; margin: 6px 0 2px; }
+  .sub { color: #5b6474; margin: 0 0 14px; }
+  .wrap { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  canvas { border: 1px solid #d8dce6; border-radius: 12px; touch-action: none;
+           cursor: grab; background: #fff; max-width: 100%; }
+  .panel { flex: 1; min-width: 300px; }
+  .row { border-radius: 10px; padding: 10px 14px; margin: 8px 0; background: #f4f6fa;
+         font-size: 15px; }
+  .num { font-family: ui-monospace, Consolas, monospace; font-weight: 600; }
+  .v  { color: #2563eb; }  /* вектор v — синий */
+  .e  { color: #059669; }  /* направление e — зелёный */
+  .t  { color: #ea580c; }  /* тень — оранжевый */
+  .p  { color: #9333ea; }  /* перпендикуляр — фиолетовый */
+  .ok { color: #059669; font-weight: 700; }
+  .task { border-left: 4px solid #2563eb; background: #eef4ff; padding: 10px 14px;
+          border-radius: 0 10px 10px 0; margin-top: 14px; font-size: 15px; }
+  a { color: #2563eb; }
+</style>
+</head>
+<body>
+<h1>Тень (проекция) одного вектора на другой</h1>
+<p class="sub">Таскай мышкой кончики стрелок: <b class="v">синюю v</b> («палку»)
+и <b class="e">зелёную e</b> («землю»). Тень пересчитывается сама. К урокам 03–04.</p>
+
+<div class="wrap">
+  <canvas id="cv" width="560" height="560"></canvas>
+  <div class="panel">
+    <div class="row"><b class="v">v</b> (палка) = <span class="num v" id="tv"></span>
+      &nbsp;|&nbsp; длина |v| = <span class="num" id="tvlen"></span></div>
+    <div class="row"><b class="e">e</b> (земля, всегда длина 1) = <span class="num e" id="te"></span></div>
+    <div class="row">Шаг 1. Длина тени = скалярное произведение:<br>
+      <b>v · e</b> = <span class="num" id="tdot"></span></div>
+    <div class="row t">Шаг 2. <b>Тень</b> = (v · e) × e = <span class="num" id="tten"></span></div>
+    <div class="row p">Шаг 3. <b>Перпендикуляр</b> = v − тень = <span class="num" id="tperp"></span></div>
+    <div class="row">Проверка: перпендикуляр · e = <span class="num" id="tcheck"></span>
+      <span id="tok" class="ok"></span></div>
+
+    <div class="task">
+      <b>Попробуй сделать:</b><br>
+      1) поставь v <b>перпендикулярно</b> e — тень исчезнет (v·e = 0);<br>
+      2) положи v <b>вдоль</b> e — тень станет равна всему v, перпендикуляр исчезнет;<br>
+      3) уведи v «за спину» e — скалярное произведение станет <b>отрицательным</b>,
+      тень развернётся назад.
+    </div>
+    <p><a href="index.html">← ко всем тренажёрам</a> &nbsp;
+       <a href="02_gram_schmidt_2d.html">дальше: Грам–Шмидт в 2D →</a></p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const S = 70;                                 // пикселей на одну единицу
+const CX = cv.width / 2, CY = cv.height / 2;  // начало координат — центр
+
+// состояние: вектор v и направление e (e храним как произвольный, рисуем нормализованным)
+let v = { x: 2.0, y: 2.6 };
+let eRaw = { x: 3.0, y: 0.9 };
+
+// --- перевод координат мир <-> экран (ось y на экране растёт вниз, у нас вверх) ---
+const toScr = p => ({ x: CX + p.x * S, y: CY - p.y * S });
+const toWorld = p => ({ x: (p.x - CX) / S, y: (CY - p.y) / S });
+
+function norm(p) { return Math.hypot(p.x, p.y); }
+function unit(p) { const n = norm(p) || 1; return { x: p.x / n, y: p.y / n }; }
+function dot(a, b) { return a.x * b.x + a.y * b.y; }
+
+function arrow(from, to, color, width, dash) {
+  const a = toScr(from), b = toScr(to);
+  ctx.save();
+  ctx.strokeStyle = ctx.fillStyle = color;
+  ctx.lineWidth = width;
+  if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  ctx.setLineDash([]);
+  // наконечник
+  const ang = Math.atan2(b.y - a.y, b.x - a.x), L = 11;
+  ctx.beginPath();
+  ctx.moveTo(b.x, b.y);
+  ctx.lineTo(b.x - L * Math.cos(ang - 0.44), b.y - L * Math.sin(ang - 0.44));
+  ctx.lineTo(b.x - L * Math.cos(ang + 0.44), b.y - L * Math.sin(ang + 0.44));
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+function label(p, text, color, dx, dy) {
+  const s = toScr(p);
+  ctx.save();
+  ctx.font = "bold 16px system-ui"; ctx.fillStyle = color;
+  // не даём подписи вылезти за края канваса
+  const w = ctx.measureText(text).width;
+  const x = Math.max(4, Math.min(cv.width - w - 4, s.x + (dx||8)));
+  const y = Math.max(16, Math.min(cv.height - 6, s.y + (dy||-8)));
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function grid() {
+  ctx.save();
+  ctx.strokeStyle = "#eef0f5"; ctx.lineWidth = 1;
+  for (let i = -4; i <= 4; i++) {
+    ctx.beginPath(); ctx.moveTo(CX + i*S, 0); ctx.lineTo(CX + i*S, cv.height); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, CY - i*S); ctx.lineTo(cv.width, CY - i*S); ctx.stroke();
+  }
+  ctx.strokeStyle = "#c9cedb";
+  ctx.beginPath(); ctx.moveTo(0, CY); ctx.lineTo(cv.width, CY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX, 0); ctx.lineTo(CX, cv.height); ctx.stroke();
+  ctx.restore();
+}
+
+const f = x => (Math.round(x * 100) / 100).toFixed(2);
+const fv = p => `[${f(p.x)}, ${f(p.y)}]`;
+
+function draw() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  grid();
+
+  const e = unit(eRaw);
+  const d = dot(v, e);                       // длина тени (число)
+  const ten = { x: d * e.x, y: d * e.y };    // сама тень (вектор)
+  const perp = { x: v.x - ten.x, y: v.y - ten.y };
+
+  // линия "земли" — прямая вдоль e
+  ctx.save();
+  ctx.strokeStyle = "#05966922"; ctx.lineWidth = 26; ctx.lineCap = "round";
+  const a = toScr({x: -e.x*4.2, y: -e.y*4.2}), b = toScr({x: e.x*4.2, y: e.y*4.2});
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  ctx.restore();
+
+  // пунктир от кончика v к кончику тени ("луч солнца")
+  arrowlessDash(v, ten);
+
+  arrow({x:0,y:0}, ten,  "#ea580c", 5);            // тень
+  arrow(ten, v,          "#9333ea", 3, [7,5]);     // перпендикуляр (из конца тени в конец v)
+  arrow({x:0,y:0}, v,    "#2563eb", 4);            // v
+  arrow({x:0,y:0}, e,    "#059669", 4);            // e (единичный)
+
+  label(v, "v", "#2563eb");
+  label(e, "e", "#059669", 10, 18);
+  label({x:ten.x/2, y:ten.y/2}, "тень", "#ea580c", 6, 22);
+  label({x:ten.x + perp.x/2, y:ten.y + perp.y/2}, "перпендикуляр", "#9333ea", 10, 0);
+
+  // ручки для перетаскивания
+  handle(v, "#2563eb"); handle(e, "#059669");
+
+  // числа на панели
+  document.getElementById("tv").textContent = fv(v);
+  document.getElementById("tvlen").textContent = f(norm(v));
+  document.getElementById("te").textContent = fv(e);
+  document.getElementById("tdot").textContent = f(d);
+  document.getElementById("tten").textContent = fv(ten) + "  (длина " + f(Math.abs(d)) + ")";
+  document.getElementById("tperp").textContent = fv(perp);
+  const chk = dot(perp, e);
+  document.getElementById("tcheck").textContent = f(chk);
+  document.getElementById("tok").textContent = Math.abs(chk) < 0.005 ? " = 0 ✓ перпендикулярно!" : "";
+}
+
+function arrowlessDash(from, to) {
+  const a = toScr(from), b = toScr(to);
+  ctx.save();
+  ctx.strokeStyle = "#9aa1b0"; ctx.lineWidth = 1.5; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  ctx.restore();
+}
+
+function handle(p, color) {
+  const s = toScr(p);
+  ctx.save();
+  ctx.fillStyle = "#fff"; ctx.strokeStyle = color; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(s.x, s.y, 8, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.restore();
+}
+
+// --- перетаскивание мышью и пальцем ---
+let dragging = null;
+function pick(mx, my) {
+  const pts = [{ref: v, name: "v"}, {ref: unit(eRaw), name: "e"}];
+  for (const p of pts) {
+    const s = toScr(p.ref);
+    if (Math.hypot(mx - s.x, my - s.y) < 22) return p.name;
+  }
+  return null;
+}
+function evPos(ev) {
+  const r = cv.getBoundingClientRect();
+  const t = ev.touches ? ev.touches[0] : ev;
+  // канвас может быть ужат стилем max-width — пересчитываем масштаб
+  return { x: (t.clientX - r.left) * cv.width / r.width,
+           y: (t.clientY - r.top) * cv.height / r.height };
+}
+function down(ev) { const p = evPos(ev); dragging = pick(p.x, p.y); if (dragging) ev.preventDefault(); }
+function move(ev) {
+  if (!dragging) return;
+  ev.preventDefault();
+  const w = toWorld(evPos(ev));
+  if (norm(w) < 0.15) return;             // не даём схлопнуться в ноль
+  if (dragging === "v") v = w; else eRaw = w;
+  draw();
+}
+function up() { dragging = null; }
+cv.addEventListener("mousedown", down); cv.addEventListener("mousemove", move);
+window.addEventListener("mouseup", up);
+cv.addEventListener("touchstart", down, {passive:false});
+cv.addEventListener("touchmove", move, {passive:false});
+window.addEventListener("touchend", up);
+
+draw();
+</script>
+</body>
+</html>

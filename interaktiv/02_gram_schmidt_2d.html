@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Грам–Шмидт в 2D по шагам — интерактив</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+         margin: 20px auto; max-width: 1100px; padding: 0 14px; color: #1f2430; }
+  h1 { font-size: 1.4em; margin: 6px 0 2px; }
+  .sub { color: #5b6474; margin: 0 0 14px; }
+  .wrap { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  canvas { border: 1px solid #d8dce6; border-radius: 12px; touch-action: none;
+           cursor: grab; background: #fff; max-width: 100%; }
+  .panel { flex: 1; min-width: 320px; }
+  .btns { display: flex; gap: 10px; margin-bottom: 12px; }
+  button { font-size: 16px; padding: 10px 18px; border-radius: 10px; border: 1px solid #c9cedb;
+           background: #fff; cursor: pointer; }
+  button.primary { background: #2563eb; border-color: #2563eb; color: #fff; font-weight: 600; }
+  button:disabled { opacity: .4; cursor: default; }
+  .step { border-radius: 10px; padding: 12px 16px; background: #f4f6fa; font-size: 15px;
+          min-height: 120px; }
+  .step h3 { margin: 0 0 6px; font-size: 1.05em; }
+  .num { font-family: ui-monospace, Consolas, monospace; font-weight: 600; }
+  .v1 { color: #2563eb; } .v2 { color: #d97706; }
+  .e1 { color: #059669; } .e2 { color: #9333ea; } .ten { color: #ef4444; }
+  .dots { margin: 10px 0 0; color: #5b6474; font-size: 14px; }
+  .dots b { color: #1f2430; }
+  a { color: #2563eb; }
+</style>
+</head>
+<body>
+<h1>Грам–Шмидт в 2D: шаг за шагом</h1>
+<p class="sub">Таскай <b class="v1">синий v1</b> и <b class="v2">оранжевый v2</b>.
+Кнопкой «Дальше» проходи процесс. На любом шаге можно продолжать таскать векторы! К урокам 07–08.</p>
+
+<div class="wrap">
+  <canvas id="cv" width="560" height="560"></canvas>
+  <div class="panel">
+    <div class="btns">
+      <button id="back">← Назад</button>
+      <button id="next" class="primary">Дальше →</button>
+      <button id="reset">Сначала</button>
+    </div>
+    <div class="step" id="stepbox"></div>
+    <div class="dots" id="check"></div>
+    <p><a href="01_ten_proekciya.html">← тень</a> &nbsp;
+       <a href="index.html">все тренажёры</a> &nbsp;
+       <a href="03_gram_schmidt_3d.html">дальше: 3D →</a></p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const S = 65, CX = cv.width/2, CY = cv.height/2;
+
+let v1 = { x: 2.4, y: 0.9 };
+let v2 = { x: 1.1, y: 2.5 };
+let step = 0;                 // 0..4
+const LAST = 4;
+
+const toScr = p => ({ x: CX + p.x*S, y: CY - p.y*S });
+const toWorld = p => ({ x: (p.x-CX)/S, y: (CY-p.y)/S });
+const norm = p => Math.hypot(p.x, p.y);
+const unit = p => { const n = norm(p)||1; return { x:p.x/n, y:p.y/n }; };
+const dot = (a,b) => a.x*b.x + a.y*b.y;
+const sub = (a,b) => ({ x:a.x-b.x, y:a.y-b.y });
+const mul = (k,a) => ({ x:k*a.x, y:k*a.y });
+const f = x => (Math.round(x*100)/100).toFixed(2);
+const fv = p => `[${f(p.x)}, ${f(p.y)}]`;
+
+// весь Грам-Шмидт для текущих v1, v2 (2D, руками)
+function gs() {
+  const e1 = unit(v1);
+  const d = dot(v2, e1);          // длина тени v2 на e1
+  const ten = mul(d, e1);         // тень
+  const u2 = sub(v2, ten);        // перпендикулярный остаток
+  const e2 = norm(u2) > 1e-9 ? unit(u2) : {x:0,y:0};
+  return { e1, d, ten, u2, e2 };
+}
+
+function arrow(from, to, color, width, dash, alpha) {
+  const a = toScr(from), b = toScr(to);
+  ctx.save();
+  ctx.globalAlpha = alpha == null ? 1 : alpha;
+  ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = width;
+  if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  ctx.setLineDash([]);
+  const ang = Math.atan2(b.y-a.y, b.x-a.x), L = 11;
+  ctx.beginPath(); ctx.moveTo(b.x,b.y);
+  ctx.lineTo(b.x - L*Math.cos(ang-0.44), b.y - L*Math.sin(ang-0.44));
+  ctx.lineTo(b.x - L*Math.cos(ang+0.44), b.y - L*Math.sin(ang+0.44));
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function label(p, text, color, dx, dy, alpha) {
+  const s = toScr(p);
+  ctx.save(); ctx.globalAlpha = alpha == null ? 1 : alpha;
+  ctx.font = "bold 16px system-ui"; ctx.fillStyle = color;
+  ctx.fillText(text, s.x+(dx||8), s.y+(dy||-8)); ctx.restore();
+}
+function handle(p, color) {
+  const s = toScr(p);
+  ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = color; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(s.x, s.y, 8, 0, 7); ctx.fill(); ctx.stroke(); ctx.restore();
+}
+function grid() {
+  ctx.save(); ctx.strokeStyle = "#eef0f5"; ctx.lineWidth = 1;
+  for (let i=-4; i<=4; i++) {
+    ctx.beginPath(); ctx.moveTo(CX+i*S,0); ctx.lineTo(CX+i*S,cv.height); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,CY-i*S); ctx.lineTo(cv.width,CY-i*S); ctx.stroke();
+  }
+  ctx.strokeStyle = "#c9cedb";
+  ctx.beginPath(); ctx.moveTo(0,CY); ctx.lineTo(cv.width,CY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX,0); ctx.lineTo(CX,cv.height); ctx.stroke();
+  ctx.restore();
+}
+// маленький квадратик прямого угла между e1 и e2
+function rightAngle(e1, e2) {
+  const k = 0.25;
+  const p1 = mul(k, e1), p2 = { x: k*e1.x + k*e2.x, y: k*e1.y + k*e2.y }, p3 = mul(k, e2);
+  const a = toScr(p1), b = toScr(p2), c = toScr(p3);
+  ctx.save(); ctx.strokeStyle = "#059669"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.stroke();
+  ctx.restore();
+}
+
+const stepsHTML = g => [
+  `<h3>Шаг 0. Исходные «кривые» векторы</h3>
+   <span class="v1">v1 = <span class="num">${fv(v1)}</span></span>,
+   <span class="v2">v2 = <span class="num">${fv(v2)}</span></span><br>
+   Они под произвольным углом и произвольной длины. Наша цель — сделать из них
+   две перпендикулярные оси длиной 1. Жми «Дальше».`,
+
+  `<h3>Шаг 1. Нормализуем v1 → получаем e1</h3>
+   |v1| = <span class="num">${f(norm(v1))}</span><br>
+   <span class="e1">e1 = v1 / |v1| = <span class="num">${fv(g.e1)}</span></span><br>
+   Направление то же, длина стала 1 (зелёная стрелка). Первая ось готова!`,
+
+  `<h3>Шаг 2. Тень v2 на ось e1</h3>
+   v2 · e1 = <span class="num">${f(g.d)}</span> — длина тени<br>
+   <span class="ten">тень = (v2 · e1) × e1 = <span class="num">${fv(g.ten)}</span></span><br>
+   Красная стрелка — часть v2, которая «дублирует» направление e1. Она нам не нужна.`,
+
+  `<h3>Шаг 3. Вычитаем тень → остаток u2</h3>
+   <span class="e2">u2 = v2 − тень = <span class="num">${fv(g.u2)}</span></span><br>
+   Фиолетовый пунктир — то новое, что v2 добавлял. Проверь глазами: он
+   перпендикулярен e1! (u2 · e1 = <span class="num">${f(dot(g.u2, g.e1))}</span>)`,
+
+  `<h3>Шаг 4. Нормализуем u2 → получаем e2. Готово!</h3>
+   |u2| = <span class="num">${f(norm(g.u2))}</span>,
+   <span class="e2">e2 = u2 / |u2| = <span class="num">${fv(g.e2)}</span></span><br>
+   Итог: <span class="e1">e1 = <span class="num">${fv(g.e1)}</span></span> и
+   <span class="e2">e2 = <span class="num">${fv(g.e2)}</span></span> —
+   ортонормированный базис. Потаскай векторы и посмотри, как он перестраивается!`
+];
+
+function draw() {
+  ctx.clearRect(0,0,cv.width,cv.height);
+  grid();
+  const g = gs();
+  const O = {x:0,y:0};
+
+  // исходные векторы: яркие на шаге 0, затем полупрозрачные
+  const fade = step === 0 ? 1 : 0.25;
+  arrow(O, v1, "#2563eb", 4, null, fade);
+  arrow(O, v2, "#d97706", 4, null, step >= 3 ? 0.25 : (step === 0 ? 1 : 1));
+  label(v1, "v1", "#2563eb", 8, -8, fade);
+  label(v2, "v2", "#d97706", 8, -8, step >= 3 ? 0.4 : 1);
+
+  if (step >= 1) { arrow(O, g.e1, "#059669", 5); label(g.e1, "e1", "#059669", 10, 20); }
+  if (step === 2 || step === 3) {
+    arrow(O, g.ten, "#ef4444", 5);
+    label(mul(0.5, g.ten), "тень", "#ef4444", 8, 24);
+    // пунктир-«луч» от v2 к тени
+    const a = toScr(v2), b = toScr(g.ten);
+    ctx.save(); ctx.strokeStyle="#9aa1b0"; ctx.setLineDash([4,4]); ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.restore();
+  }
+  if (step === 3) { arrow(O, g.u2, "#9333ea", 4, [8,5]); label(g.u2, "u2", "#9333ea"); }
+  if (step >= 4) {
+    arrow(O, g.e2, "#9333ea", 5); label(g.e2, "e2", "#9333ea");
+    rightAngle(g.e1, g.e2);
+  }
+
+  handle(v1, "#2563eb"); handle(v2, "#d97706");
+
+  document.getElementById("stepbox").innerHTML = stepsHTML(g)[step];
+  document.getElementById("back").disabled = step === 0;
+  document.getElementById("next").disabled = step === LAST;
+
+  // постоянная проверка внизу
+  const c = document.getElementById("check");
+  if (step >= 4) {
+    c.innerHTML = `Проверка ответа (урок 07): |e1| = <b>${f(norm(g.e1))}</b>,
+      |e2| = <b>${f(norm(g.e2))}</b>, e1 · e2 = <b>${f(dot(g.e1,g.e2))}</b>
+      ${Math.abs(dot(g.e1,g.e2)) < 0.005 ? " ✓ всё перпендикулярно и единично!" : ""}`;
+  } else c.innerHTML = "";
+}
+
+document.getElementById("next").onclick = () => { if (step < LAST) step++; draw(); };
+document.getElementById("back").onclick = () => { if (step > 0) step--; draw(); };
+document.getElementById("reset").onclick = () => { step = 0; draw(); };
+
+// перетаскивание
+let dragging = null;
+function evPos(ev) {
+  const r = cv.getBoundingClientRect();
+  const t = ev.touches ? ev.touches[0] : ev;
+  return { x: (t.clientX-r.left)*cv.width/r.width, y: (t.clientY-r.top)*cv.height/r.height };
+}
+cv.addEventListener("mousedown", downH); cv.addEventListener("touchstart", downH, {passive:false});
+cv.addEventListener("mousemove", moveH); cv.addEventListener("touchmove", moveH, {passive:false});
+window.addEventListener("mouseup", () => dragging = null);
+window.addEventListener("touchend", () => dragging = null);
+function downH(ev) {
+  const p = evPos(ev);
+  for (const [name, ref] of [["v1", v1], ["v2", v2]]) {
+    const s = toScr(ref);
+    if (Math.hypot(p.x-s.x, p.y-s.y) < 22) { dragging = name; ev.preventDefault(); return; }
+  }
+}
+function moveH(ev) {
+  if (!dragging) return;
+  ev.preventDefault();
+  const w = toWorld(evPos(ev));
+  if (norm(w) < 0.15) return;
+  if (dragging === "v1") v1 = w; else v2 = w;
+  draw();
+}
+
+draw();
+</script>
+</body>
+</html>

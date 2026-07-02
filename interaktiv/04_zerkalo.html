@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Наклонное зеркало — интерактив</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+         margin: 20px auto; max-width: 1150px; padding: 0 14px; color: #1f2430; }
+  h1 { font-size: 1.4em; margin: 6px 0 2px; }
+  .sub { color: #5b6474; margin: 0 0 14px; }
+  .wrap { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  canvas { border: 1px solid #d8dce6; border-radius: 12px; touch-action: none;
+           cursor: grab; background: #fff; max-width: 100%; }
+  .panel { flex: 1; min-width: 330px; font-size: 15px; }
+  .grp { background: #f4f6fa; border-radius: 10px; padding: 10px 14px; margin: 8px 0; }
+  .num { font-family: ui-monospace, Consolas, monospace; font-weight: 600; }
+  .m { color: #059669; } .r { color: #2563eb; } .o { color: #db2777; }
+  .stage { padding: 6px 10px; border-radius: 8px; margin: 4px 0; }
+  .stage.active { background: #eef4ff; outline: 2px solid #2563eb; }
+  table.mx { border-collapse: collapse; display: inline-table; margin: 2px 8px;
+             vertical-align: middle; }
+  table.mx td { border-left: 2px solid #444; border-right: 2px solid #444;
+                padding: 2px 8px; text-align: right;
+                font-family: ui-monospace, Consolas, monospace; font-size: 14px; }
+  label.chk { display: inline-block; margin-right: 14px; user-select: none; }
+  a { color: #2563eb; }
+</style>
+</head>
+<body>
+<h1>Отражение в наклонном зеркале: E · TE · Eᵀ вживую</h1>
+<p class="sub">Таскай <b class="m">зелёную ручку</b> — поворачивай зеркало.
+Таскай <b class="r">синюю точку</b> — двигай то, что отражаем.
+<b class="o">Розовая точка</b> — отражение. К уроку 10.</p>
+
+<div class="wrap">
+  <canvas id="cv" width="580" height="580"></canvas>
+  <div class="panel">
+    <div class="grp">
+      <b>Цепочка r_new = E · TE · Eᵀ · r (читаем справа налево):</b>
+      <div class="stage" id="st0">точка <b class="r">r</b> =
+        <span class="num" id="tr"></span> (обычные координаты)</div>
+      <div class="stage" id="st1">1) <b>Eᵀ · r</b> =
+        <span class="num" id="tr1"></span> — перевели в координаты зеркала<br>
+        <small>первая цифра — вдоль зеркала, вторая — поперёк</small></div>
+      <div class="stage" id="st2">2) <b>TE · (Eᵀ r)</b> =
+        <span class="num" id="tr2"></span> — отразили: вторую цифру × (−1)</div>
+      <div class="stage" id="st3">3) <b>E · (TE Eᵀ r)</b> =
+        <span class="num" id="tr3"></span> — вернулись в обычные координаты</div>
+    </div>
+    <div class="grp">
+      <b>Матрицы:</b><br>
+      E = <table class="mx"><tr><td id="e00"></td><td id="e01"></td></tr>
+          <tr><td id="e10"></td><td id="e11"></td></tr></table>
+      TE = <table class="mx"><tr><td>1</td><td>0</td></tr>
+          <tr><td>0</td><td>−1</td></tr></table>
+      T = E·TE·Eᵀ = <table class="mx"><tr><td id="t00"></td><td id="t01"></td></tr>
+          <tr><td id="t10"></td><td id="t11"></td></tr></table><br>
+      <small>Столбцы E — оси зеркала (после Грама–Шмидта): e1 вдоль, e2 поперёк.
+      T — готовая «машинка отражения» для любых точек.</small>
+    </div>
+    <div class="grp">
+      <label class="chk"><input type="checkbox" id="showAxes" checked> показать оси зеркала e1, e2</label>
+      <label class="chk"><input type="checkbox" id="showTrace" checked> пунктир точка↔отражение</label>
+    </div>
+    <div class="grp" id="props"></div>
+    <p><a href="03_gram_schmidt_3d.html">← 3D</a> &nbsp; <a href="index.html">все тренажёры</a></p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const S = 68, CX = cv.width/2, CY = cv.height/2;
+
+let mirror = { x: 2.2, y: 1.2 };   // направление зеркала (ручка)
+let r = { x: 0.6, y: 2.4 };        // отражаемая точка
+
+const toScr = p => ({ x: CX + p.x*S, y: CY - p.y*S });
+const toWorld = p => ({ x: (p.x-CX)/S, y: (CY-p.y)/S });
+const norm = p => Math.hypot(p.x, p.y);
+const unit = p => { const n = norm(p)||1; return { x:p.x/n, y:p.y/n }; };
+const dot = (a,b) => a.x*b.x + a.y*b.y;
+const f = x => (Math.round(x*100)/100).toFixed(2);
+const fv = p => `[${f(p.x)}, ${f(p.y)}]`;
+
+function compute() {
+  // Грам-Шмидт для базиса зеркала: e1 вдоль зеркала, e2 - перпендикуляр.
+  // В 2D после нормализации e1 перпендикуляр строится сразу поворотом на 90°
+  // (это ровно то, что дал бы Грам-Шмидт со вторым опорным вектором).
+  const e1 = unit(mirror);
+  const e2 = { x: -e1.y, y: e1.x };
+  // матрица E по столбцам: [e1 e2]
+  const E = [[e1.x, e2.x], [e1.y, e2.y]];
+  // шаг 1: перевод в координаты зеркала: E^T r
+  const rz = { x: e1.x*r.x + e1.y*r.y, y: e2.x*r.x + e2.y*r.y };
+  // шаг 2: отражение в координатах зеркала: TE = [[1,0],[0,-1]]
+  const rz2 = { x: rz.x, y: -rz.y };
+  // шаг 3: обратно: E * rz2
+  const ro = { x: E[0][0]*rz2.x + E[0][1]*rz2.y,
+               y: E[1][0]*rz2.x + E[1][1]*rz2.y };
+  // склеенная матрица T = E TE E^T
+  const T = [[e1.x*e1.x - e2.x*e2.x, e1.x*e1.y - e2.x*e2.y],
+             [e1.y*e1.x - e2.y*e2.x, e1.y*e1.y - e2.y*e2.y]];
+  return { e1, e2, E, rz, rz2, ro, T };
+}
+
+function arrow(from, to, color, width, dash) {
+  const a = toScr(from), b = toScr(to);
+  ctx.save(); ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = width;
+  if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  ctx.setLineDash([]);
+  const ang = Math.atan2(b.y-a.y, b.x-a.x), L = 10;
+  ctx.beginPath(); ctx.moveTo(b.x,b.y);
+  ctx.lineTo(b.x - L*Math.cos(ang-0.44), b.y - L*Math.sin(ang-0.44));
+  ctx.lineTo(b.x - L*Math.cos(ang+0.44), b.y - L*Math.sin(ang+0.44));
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function point(p, color, rad) {
+  const s = toScr(p);
+  ctx.save(); ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(s.x, s.y, rad||7, 0, 7); ctx.fill(); ctx.restore();
+}
+function label(p, text, color, dx, dy) {
+  const s = toScr(p);
+  ctx.save(); ctx.font = "bold 15px system-ui"; ctx.fillStyle = color;
+  ctx.fillText(text, s.x+(dx||10), s.y+(dy||-10)); ctx.restore();
+}
+function grid() {
+  ctx.save(); ctx.strokeStyle = "#eef0f5";
+  for (let i=-4; i<=4; i++) {
+    ctx.beginPath(); ctx.moveTo(CX+i*S,0); ctx.lineTo(CX+i*S,cv.height); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,CY-i*S); ctx.lineTo(cv.width,CY-i*S); ctx.stroke();
+  }
+  ctx.strokeStyle = "#c9cedb";
+  ctx.beginPath(); ctx.moveTo(0,CY); ctx.lineTo(cv.width,CY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX,0); ctx.lineTo(CX,cv.height); ctx.stroke();
+  ctx.restore();
+}
+
+function draw() {
+  ctx.clearRect(0,0,cv.width,cv.height);
+  grid();
+  const c = compute();
+
+  // зеркало: толстая зелёная полупрозрачная линия через центр
+  ctx.save();
+  ctx.strokeStyle = "#05966933"; ctx.lineWidth = 16; ctx.lineCap = "round";
+  const a = toScr({x:-c.e1.x*4.2, y:-c.e1.y*4.2}), b = toScr({x:c.e1.x*4.2, y:c.e1.y*4.2});
+  ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  ctx.restore();
+  label({x:c.e1.x*3.4, y:c.e1.y*3.4}, "зеркало", "#059669", -20, 26);
+
+  if (document.getElementById("showAxes").checked) {
+    arrow({x:0,y:0}, c.e1, "#059669", 4);
+    arrow({x:0,y:0}, c.e2, "#0e7490", 4);
+    label(c.e1, "e1", "#059669", 8, 20);
+    label(c.e2, "e2", "#0e7490");
+  }
+  if (document.getElementById("showTrace").checked) {
+    const s1 = toScr(r), s2 = toScr(c.ro);
+    ctx.save(); ctx.strokeStyle = "#9aa1b0"; ctx.setLineDash([5,5]); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(s1.x,s1.y); ctx.lineTo(s2.x,s2.y); ctx.stroke(); ctx.restore();
+  }
+
+  point(r, "#2563eb", 8);   label(r, "r", "#2563eb");
+  point(c.ro, "#db2777", 8); label(c.ro, "отражение", "#db2777");
+  // ручка зеркала
+  const h = toScr({x: unit(mirror).x*2.6, y: unit(mirror).y*2.6});
+  ctx.save(); ctx.fillStyle = "#fff"; ctx.strokeStyle = "#059669"; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(h.x, h.y, 9, 0, 7); ctx.fill(); ctx.stroke(); ctx.restore();
+
+  // панель чисел
+  document.getElementById("tr").textContent = fv(r);
+  document.getElementById("tr1").textContent = fv(c.rz);
+  document.getElementById("tr2").textContent = fv(c.rz2);
+  document.getElementById("tr3").textContent = fv(c.ro);
+  const ids = [["e00","e01"],["e10","e11"]];
+  ids.forEach((row,i) => row.forEach((id,j) =>
+    document.getElementById(id).textContent = f(c.E[i][j])));
+  const tids = [["t00","t01"],["t10","t11"]];
+  tids.forEach((row,i) => row.forEach((id,j) =>
+    document.getElementById(id).textContent = f(c.T[i][j])));
+
+  // свойства отражения (урок 10, раздел 7)
+  const dist1 = Math.abs(dot(r, c.e2));        // расстояние точки до зеркала
+  const dist2 = Math.abs(dot(c.ro, c.e2));
+  document.getElementById("props").innerHTML =
+    `<b>Проверь свойства зеркала:</b><br>
+     расстояние до зеркала: точка <span class="num">${f(dist1)}</span> /
+     отражение <span class="num">${f(dist2)}</span> — одинаково!<br>
+     длина |r| = <span class="num">${f(norm(r))}</span>,
+     |отражения| = <span class="num">${f(norm(c.ro))}</span> — зеркало не растягивает.<br>
+     <small>Подведи точку прямо НА зеркало — отражение сольётся с ней.</small>`;
+}
+
+// перетаскивание: точка r или ручка зеркала
+let dragging = null;
+function evPos(ev) {
+  const rc = cv.getBoundingClientRect();
+  const t = ev.touches ? ev.touches[0] : ev;
+  return { x: (t.clientX-rc.left)*cv.width/rc.width, y: (t.clientY-rc.top)*cv.height/rc.height };
+}
+cv.addEventListener("mousedown", downH);
+cv.addEventListener("touchstart", downH, {passive:false});
+cv.addEventListener("mousemove", moveH);
+cv.addEventListener("touchmove", moveH, {passive:false});
+window.addEventListener("mouseup", () => dragging = null);
+window.addEventListener("touchend", () => dragging = null);
+function downH(ev) {
+  const p = evPos(ev);
+  const hm = toScr({x: unit(mirror).x*2.6, y: unit(mirror).y*2.6});
+  const rs = toScr(r);
+  if (Math.hypot(p.x-rs.x, p.y-rs.y) < 22) dragging = "r";
+  else if (Math.hypot(p.x-hm.x, p.y-hm.y) < 24) dragging = "m";
+  if (dragging) ev.preventDefault();
+}
+function moveH(ev) {
+  if (!dragging) return;
+  ev.preventDefault();
+  const w = toWorld(evPos(ev));
+  if (dragging === "r") r = w;
+  else if (norm(w) > 0.15) mirror = w;
+  draw();
+}
+
+document.querySelectorAll("input[type=checkbox]").forEach(i => i.addEventListener("change", draw));
+draw();
+</script>
+</body>
+</html>
