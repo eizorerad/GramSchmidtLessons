@@ -5,111 +5,115 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ВЕКТОР: Ортонорма</title>
 <style>
-/* ВЕКТОР: Ортонорма — стили. Тёмно-синяя лаборатория, неоновые векторы. */
+/* ВЕКТОР: Ортонорма (ревизия B) — космос, неон, физика */
 * { box-sizing: border-box; }
 body {
   margin: 0; min-height: 100vh; color: #dbe4ff;
   font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  background: radial-gradient(1200px 800px at 30% -10%, #16224a 0%, #0b1020 55%, #070b16 100%);
+  background: radial-gradient(1200px 800px at 30% -10%, #141f45 0%, #0a0f20 55%, #060a14 100%);
 }
 .hidden { display: none !important; }
 button { font-family: inherit; cursor: pointer; }
 
 /* ---------- экраны ---------- */
-.screen { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+.screen { max-width: 990px; margin: 0 auto; padding: 18px 14px; }
 
-.menu-box { max-width: 440px; margin: 6vh auto; text-align: center; }
-.menu-box h1 { margin: 10px 0 4px; letter-spacing: 2px; }
-.tagline { color: #8fa1d0; margin: 0 0 26px; }
-.credits { color: #55648f; font-size: 13px; margin-top: 26px; }
+.menu-box { max-width: 460px; margin: 5vh auto; text-align: center; }
+.menu-box h1 { margin: 8px 0 4px; letter-spacing: 2px; }
+.tagline { color: #8fa1d0; margin: 0 0 24px; line-height: 1.5; }
+.credits { color: #55648f; font-size: 13px; margin-top: 24px; }
+
+.logo-ship { position: relative; width: 84px; height: 84px; margin: 0 auto;
+  font-size: 54px; color: #7dd3fc; line-height: 84px;
+  text-shadow: 0 0 24px #38bdf8, 0 0 60px #38bdf8; }
+.ship-glow { position: absolute; inset: 18px; border-radius: 50%;
+  background: radial-gradient(circle, #38bdf822, transparent 70%); }
 
 button.big {
-  display: block; width: 100%; margin: 10px 0; padding: 13px 18px;
+  display: block; width: 100%; margin: 9px 0; padding: 13px 18px;
   font-size: 17px; border-radius: 12px; border: 1px solid #2a3a6b;
-  background: #131c38; color: #dbe4ff; transition: transform .1s, background .15s;
+  background: #121a34; color: #dbe4ff; transition: transform .1s, background .15s;
 }
 button.big:hover:not(:disabled) { background: #1a2750; transform: translateY(-1px); }
 button.big.primary { background: #2563eb; border-color: #2563eb; font-weight: 700; }
 button.big.primary:hover { background: #3b76f6; }
 button.big:disabled { opacity: .45; cursor: default; }
 
-/* робот-логотип */
-.logo-bot { width: 90px; margin: 0 auto; }
-.bot-antenna { width: 4px; height: 18px; background: #38bdf8; margin: 0 auto;
-  border-radius: 2px; box-shadow: 0 -6px 12px #38bdf8; }
-.bot-body { width: 74px; height: 60px; margin: 0 auto; border-radius: 22px;
-  background: linear-gradient(#3a4a80, #222f5c); border: 2px solid #4a5c9b;
-  display: flex; align-items: center; justify-content: center; }
-.bot-eye { width: 26px; height: 26px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #baf3ff, #38bdf8 60%, #0369a1);
-  box-shadow: 0 0 14px #38bdf8; }
-
-/* ---------- выбор уровня ---------- */
-#level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 12px; margin: 18px 0 22px; }
+/* ---------- выбор сектора ---------- */
+#level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 12px; margin: 16px 0 20px; }
 .lvl-card { border: 1px solid #2a3a6b; border-radius: 12px; padding: 12px 14px;
-  background: #121a34; cursor: pointer; transition: background .15s; }
+  background: #111a34; cursor: pointer; transition: background .15s; }
 .lvl-card:hover { background: #1a2750; }
 .lvl-card.locked { opacity: .4; cursor: default; }
 .lvl-card .deck { font-size: 12px; color: #8fa1d0; }
 .lvl-card .stars { color: #fbbf24; letter-spacing: 2px; }
 
 /* ---------- игровой экран ---------- */
-#hud { display: flex; gap: 14px; align-items: center; padding: 8px 4px;
-  font-size: 15px; color: #9fb0dd; }
+#hud { display: flex; gap: 14px; align-items: center; padding: 6px 4px 8px;
+  font-size: 15px; color: #9fb0dd; flex-wrap: wrap; }
 #hud-name { color: #dbe4ff; font-weight: 700; }
 .hud-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 #hud-stars { color: #fbbf24; }
-#hud button { background: #131c38; color: #dbe4ff; border: 1px solid #2a3a6b;
+#hud-fuel { font-family: ui-monospace, Consolas, monospace; color: #7dd3fc; }
+#hud-fuel.low { color: #f87171; }
+#hud button { background: #121a34; color: #dbe4ff; border: 1px solid #2a3a6b;
   border-radius: 8px; padding: 5px 10px; font-size: 15px; }
 
-#room { display: block; width: 100%; max-width: 884px; border-radius: 14px;
-  border: 1px solid #23305c; background: #0d1430; touch-action: none; cursor: pointer; }
-#room-tip { color: #55648f; font-size: 13px; padding: 6px 2px; }
+#stage { position: relative; }
+#cv { display: block; width: 100%; border-radius: 14px;
+  border: 1px solid #22305c; background: #070c1c; touch-action: none; cursor: crosshair; }
 
-#dialogue { position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
-  width: min(720px, 92vw); background: #101a3add; border: 1px solid #35509f;
-  border-radius: 14px; padding: 14px 18px; backdrop-filter: blur(4px); cursor: pointer; }
-#dlg-text { font-size: 16px; line-height: 1.5; }
-#dlg-next { text-align: right; color: #7f92c8; font-size: 12px; margin-top: 6px; }
+#iris { position: absolute; left: 12px; right: 12px; top: 10px;
+  background: #0d1634ee; border: 1px solid #35509f; border-radius: 12px;
+  padding: 11px 15px; cursor: pointer; font-size: 15px; line-height: 1.5;
+  display: flex; gap: 10px; align-items: baseline; }
+.iris-next { margin-left: auto; color: #7f92c8; font-size: 13px; flex: none; }
+
+#hint-pop { position: absolute; right: 12px; bottom: 12px; max-width: 380px;
+  background: #14224eee; border: 1px dashed #4a5c9b; border-radius: 12px;
+  padding: 10px 14px; font-size: 14px; line-height: 1.5; }
+
+/* нижняя панель */
+#bar { display: flex; gap: 14px; align-items: center; padding: 10px 4px;
+  flex-wrap: wrap; min-height: 62px; }
+#bar-info { font-size: 15px; line-height: 1.5; min-width: 260px; flex: 1; }
+#bar-info b { font-family: ui-monospace, Consolas, monospace; color: #7dd3fc; }
+#bar-info .warn { color: #fbbf24; }
+#bar-info .good { color: #4ade80; }
+#bar-tools { display: flex; gap: 8px; flex-wrap: wrap; }
+#bar-tools button { padding: 10px 14px; font-size: 15px; border-radius: 10px;
+  border: 1px solid #2a3a6b; background: #17224a; color: #dbe4ff; }
+#bar-tools button:hover:not(:disabled) { background: #20305f; }
+#bar-tools button:disabled { opacity: .4; }
+#bar-tools button.go { background: #2563eb; border-color: #2563eb; font-weight: 700; }
+#bar-tools button.go:hover { background: #3b76f6; }
+
+/* чипы конвейера в нижней панели */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.chip { padding: 8px 11px; border-radius: 10px; border: 1px solid #4a5c9b;
+  background: #1b2a5c; font-family: ui-monospace, Consolas, monospace;
+  font-size: 14px; cursor: pointer; user-select: none; }
+.chip:hover { background: #24377a; }
+.slot { min-width: 110px; min-height: 38px; border: 2px dashed #35509f;
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #7f92c8; padding: 3px; }
 
 /* ---------- модальные окна ---------- */
-.modal { position: fixed; inset: 0; background: #04060fd0; display: flex;
+.modal { position: fixed; inset: 0; background: #04060fd6; display: flex;
   align-items: center; justify-content: center; z-index: 50; padding: 12px; }
-
-.puzzle-box, .jr-box, .cer-box { background: #0f1730; border: 1px solid #2a3a6b;
-  border-radius: 16px; max-width: 900px; width: 100%; max-height: 94vh; overflow: auto; }
-.puzzle-head { display: flex; justify-content: space-between; align-items: center;
+.jr-box, .cer-box { background: #0f1730; border: 1px solid #2a3a6b;
+  border-radius: 16px; max-width: 640px; width: 100%; max-height: 92vh; overflow: auto; }
+.mhead { display: flex; justify-content: space-between; align-items: center;
   padding: 12px 16px; border-bottom: 1px solid #22305c; font-size: 17px; }
-.puzzle-head button { background: none; border: none; color: #8fa1d0; font-size: 18px; }
-.puzzle-body { display: flex; gap: 14px; padding: 14px; flex-wrap: wrap; }
-#pz-canvas { border-radius: 12px; background: #0d1430; border: 1px solid #23305c;
-  touch-action: none; max-width: 100%; }
-.puzzle-side { flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 10px; }
-.goal { background: #14224e; border-left: 4px solid #2563eb; border-radius: 0 10px 10px 0;
-  padding: 10px 12px; font-size: 15px; line-height: 1.45; }
-.info { background: #101a3a; border-radius: 10px; padding: 10px 12px;
-  font-size: 15px; line-height: 1.55; min-height: 64px; }
-.info b { color: #7dd3fc; font-family: ui-monospace, Consolas, monospace; }
-#pz-buttons { display: flex; flex-direction: column; gap: 8px; }
-#pz-buttons button { padding: 10px 12px; font-size: 15px; border-radius: 10px;
-  border: 1px solid #2a3a6b; background: #17224a; color: #dbe4ff; text-align: left; }
-#pz-buttons button:hover:not(:disabled) { background: #20305f; }
-#pz-buttons button:disabled { opacity: .4; }
-.msg { min-height: 22px; color: #fbbf24; font-size: 14px; }
-.msg.good { color: #4ade80; }
-.hintbtn { align-self: flex-start; background: none; border: 1px dashed #4a5c9b;
-  color: #9fb0dd; border-radius: 10px; padding: 7px 12px; font-size: 14px; }
-.hinttext { color: #cbd5f5; font-size: 14px; line-height: 1.5; }
-.hinttext .h { background: #14224e; border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
+.mhead button { background: none; border: none; color: #8fa1d0; font-size: 18px; }
 
-/* церемония */
 .cer-box { max-width: 520px; text-align: center; padding: 22px; }
-.cer-stars { font-size: 40px; letter-spacing: 8px; margin: 6px 0 2px; }
+.cer-stars { font-size: 40px; letter-spacing: 8px; margin: 6px 0 0; color: #fbbf24; }
 .cer-stars .off { opacity: .22; }
-.star-label { font-size: 13px; color: #8fa1d0; margin-bottom: 12px; letter-spacing: normal; }
+.star-label { font-size: 13px; color: #8fa1d0; margin-bottom: 10px; letter-spacing: normal; }
 .cer-journal { background: #101a3a; border-radius: 12px; padding: 12px;
-  text-align: left; margin: 12px 0; font-size: 14px; }
+  text-align: left; margin: 12px 0; font-size: 14px; line-height: 1.55; }
 .cer-journal .frm { font-family: ui-monospace, Consolas, monospace; color: #7dd3fc;
   margin-top: 6px; }
 .cer-question { text-align: left; margin: 10px 0; }
@@ -121,8 +125,6 @@ button.big:disabled { opacity: .45; cursor: default; }
 .cer-question button.right { background: #14532d; border-color: #22c55e; }
 .cer-question button.wrong { background: #58151c; border-color: #ef4444; }
 
-/* журнал */
-.jr-box { max-width: 640px; }
 #jr-list { padding: 14px; }
 .jr-entry { border: 1px solid #22305c; border-radius: 12px; padding: 12px 14px;
   margin-bottom: 10px; background: #101a3a; }
@@ -136,24 +138,6 @@ button.big:disabled { opacity: .45; cursor: default; }
 .jr-empty { color: #55648f; text-align: center; padding: 30px 0; }
 .how-text { padding: 14px 18px; font-size: 15px; line-height: 1.55; }
 
-/* конвейер и кодовая комната — DOM-элементы поверх канваса */
-.chips { display: flex; gap: 8px; flex-wrap: wrap; }
-.chip { padding: 9px 12px; border-radius: 10px; border: 1px solid #4a5c9b;
-  background: #1b2a5c; font-family: ui-monospace, Consolas, monospace;
-  font-size: 14px; cursor: pointer; user-select: none; }
-.chip:hover { background: #24377a; }
-.slotrow { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
-.slot { min-width: 118px; min-height: 40px; border: 2px dashed #35509f; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center; font-size: 13px;
-  color: #7f92c8; padding: 4px; }
-.slot .chip { margin: 0; }
-.codeline { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
-.codeline .txt { flex: 1; font-family: ui-monospace, Consolas, monospace; font-size: 14px;
-  background: #0d1430; border: 1px solid #22305c; border-radius: 8px; padding: 9px 12px;
-  color: #a5f3fc; }
-.codeline button { width: 34px; height: 34px; border-radius: 8px; border: 1px solid #2a3a6b;
-  background: #17224a; color: #dbe4ff; }
-
 </style>
 </head>
 <body>
@@ -161,73 +145,57 @@ button.big:disabled { opacity: .45; cursor: default; }
 <!-- ЭКРАН: главное меню -->
 <div id="scr-menu" class="screen">
   <div class="menu-box">
-    <div class="logo-bot" aria-hidden="true">
-      <div class="bot-antenna"></div>
-      <div class="bot-body"><div class="bot-eye"></div></div>
-    </div>
+    <div class="logo-ship" aria-hidden="true"><div class="ship-glow"></div>▲</div>
     <h1>ВЕКТОР: Ортонорма</h1>
-    <p class="tagline">Почини координатное ядро корабля —<br>и пойми Грам–Шмидт руками.</p>
+    <p class="tagline">Летай по векторам. Плати топливом за длину.<br>
+    Отражай лазеры матрицами. Почини сломанный базис.</p>
     <button class="big primary" id="btn-continue">▶ Играть</button>
-    <button class="big" id="btn-levels">Палубы</button>
+    <button class="big" id="btn-levels">Сектора</button>
     <button class="big" id="btn-journal-menu">📓 Журнал формул</button>
-    <button class="big" id="btn-endless" disabled>∞ Бесконечная лаборатория 🔒</button>
+    <button class="big" id="btn-endless" disabled>∞ Бесконечный полёт 🔒</button>
     <button class="big" id="btn-how">Как играть</button>
-    <p class="credits">По курсу GramSchmidtLessons · прототип «Ступень A»</p>
+    <p class="credits">По курсу GramSchmidtLessons · ревизия B: математика = физика мира</p>
   </div>
 </div>
 
-<!-- ЭКРАН: выбор уровня -->
+<!-- ЭКРАН: выбор сектора -->
 <div id="scr-levels" class="screen hidden">
-  <h2>Палубы корабля</h2>
+  <h2>Сектора</h2>
   <div id="level-grid"></div>
   <button class="big" id="btn-back-menu">← В меню</button>
 </div>
 
-<!-- ЭКРАН: игра (комната) -->
+<!-- ЭКРАН: игра -->
 <div id="scr-game" class="screen hidden">
   <div id="hud">
-    <span id="hud-deck"></span>
+    <span id="hud-zone"></span>
     <span id="hud-name"></span>
     <span class="hud-right">
+      <span id="hud-fuel"></span>
       <span id="hud-stars">★ 0</span>
-      <button id="btn-journal">📓</button>
-      <button id="btn-map">🗺</button>
+      <button id="btn-hint" title="подсказка">💡</button>
+      <button id="btn-journal" title="журнал">📓</button>
+      <button id="btn-map" title="сектора">🗺</button>
     </span>
   </div>
-  <canvas id="room" width="884" height="544"></canvas>
-  <div id="dialogue" class="hidden">
-    <div id="dlg-text"></div>
-    <div id="dlg-next">нажми или пробел ▸</div>
+  <div id="stage">
+    <canvas id="cv" width="940" height="560"></canvas>
+    <div id="iris" class="hidden"><span id="iris-text"></span>
+      <span class="iris-next">▸</span></div>
+    <div id="hint-pop" class="hidden"></div>
   </div>
-  <div id="room-tip">WASD / стрелки / клик по полу — идти · консоль — головоломка · открытая дверь — дальше</div>
-</div>
-
-<!-- ОВЕРЛЕЙ: головоломка -->
-<div id="puzzle" class="modal hidden">
-  <div class="puzzle-box">
-    <div class="puzzle-head">
-      <b id="pz-title"></b>
-      <button id="pz-close">✕</button>
-    </div>
-    <div class="puzzle-body">
-      <canvas id="pz-canvas" width="520" height="440"></canvas>
-      <div class="puzzle-side">
-        <div id="pz-goal" class="goal"></div>
-        <div id="pz-info" class="info"></div>
-        <div id="pz-buttons"></div>
-        <div id="pz-msg" class="msg"></div>
-        <button id="pz-hint" class="hintbtn">💡 Подсказка</button>
-        <div id="pz-hint-text" class="hinttext"></div>
-      </div>
-    </div>
+  <div id="bar">
+    <div id="bar-info"></div>
+    <div id="bar-tools"></div>
   </div>
 </div>
 
-<!-- ОВЕРЛЕЙ: церемония (звёзды + вопрос) -->
+<!-- ОВЕРЛЕЙ: церемония -->
 <div id="ceremony" class="modal hidden">
   <div class="cer-box">
-    <h2 id="cer-title">Палуба починена!</h2>
+    <h2 id="cer-title">Сектор пройден!</h2>
     <div id="cer-stars" class="cer-stars"></div>
+    <div id="cer-labels" class="star-label"></div>
     <div id="cer-journal" class="cer-journal"></div>
     <div id="cer-question" class="cer-question"></div>
     <button class="big primary" id="cer-next">Дальше ▸</button>
@@ -237,7 +205,7 @@ button.big:disabled { opacity: .45; cursor: default; }
 <!-- ОВЕРЛЕЙ: журнал -->
 <div id="journal" class="modal hidden">
   <div class="jr-box">
-    <div class="puzzle-head"><b>📓 Бортовой журнал формул</b><button id="jr-close">✕</button></div>
+    <div class="mhead"><b>📓 Бортовой журнал формул</b><button id="jr-close">✕</button></div>
     <div id="jr-list"></div>
   </div>
 </div>
@@ -245,17 +213,19 @@ button.big:disabled { opacity: .45; cursor: default; }
 <!-- ОВЕРЛЕЙ: как играть -->
 <div id="howto" class="modal hidden">
   <div class="jr-box">
-    <div class="puzzle-head"><b>Как играть</b><button id="how-close">✕</button></div>
+    <div class="mhead"><b>Как играть</b><button id="how-close">✕</button></div>
     <div class="how-text">
-      <p><b>Ходи</b> по палубе: WASD, стрелки или клик по полу.</p>
-      <p><b>Встань на синюю консоль</b> — откроется головоломка. Перетаскивай кончики
-      стрелок мышкой, жми кнопки операций. Числа справа считаются вживую.</p>
-      <p><b>Реши головоломку</b> — дверь справа откроется. Дойди до неё.</p>
-      <p>За уровень можно получить до <b>трёх звёзд</b>: ★ решил · ★ без подсказок ·
+      <p><b>Полёт.</b> Зажми мышку и потяни — от корабля вырастет вектор тяги.
+      Кнопка <b>«▶ Тяга!»</b> — корабль летит по стрелке. Топливо тратится
+      ровно на длину вектора.</p>
+      <p><b>Маршруты.</b> «+ Добавить вектор» — пристроить следующую стрелку
+      к концу предыдущей. Итог пути = сумма векторов.</p>
+      <p><b>Предметы.</b> У зеркал есть ручки — тяни и вращай, луч отражается
+      вживую. Светящаяся балка отбрасывает тень-мост на рельсу. У ядра сектора
+      появляются кнопки починки базиса.</p>
+      <p><b>Звёзды:</b> ★ прошёл · ★ уложился в топливо (или без подсказок) ·
       ★ ответил на вопрос о смысле.</p>
-      <p>Каждая починенная палуба добавляет запись в <b>журнал формул</b> —
-      это твой конспект, заработанный руками.</p>
-      <p>Застрял? Кнопка 💡 даёт подсказки слоями — от намёка до ответа.</p>
+      <p>Кнопка 💡 — подсказки слоями. «↺» — заправиться и начать сектор заново.</p>
     </div>
   </div>
 </div>
@@ -338,6 +308,14 @@ const M = {
             [A[1][0]*B[0][0] + A[1][1]*B[1][0], A[1][0]*B[0][1] + A[1][1]*B[1][1]]];
   },
 
+  // обратная матрица 2x2 (нужна, чтобы переводить клики мыши в координаты
+  // искажённого мира; для ортонормированной матрицы это просто транспонирование)
+  matInv(A) {
+    const d = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+    return [[ A[1][1] / d, -A[0][1] / d],
+            [-A[1][0] / d,  A[0][0] / d]];
+  },
+
   // матрица отражения в зеркале вдоль направления dir: T = E·TE·Eᵀ (урок 10)
   reflectionMatrix(dir) {
     const e1 = M.normalize(dir);
@@ -358,9 +336,10 @@ const M = {
 if (typeof module !== "undefined") module.exports = M;
 
 // ============================================================
-// УРОВНИ игры «ВЕКТОР: Ортонорма»
-// Каждый уровень: палуба, вступление ИРИС, головоломка,
-// запись в журнал, вопрос на понимание (3-я звезда), подсказки.
+// СЕКТОРА игры «ВЕКТОР: Ортонорма» (ревизия B)
+// Каждый сектор - открытый космос. Математика = физика мира:
+// летаешь по векторам тяги, топливо = длина вектора, тень = мост,
+// зеркала отражают по-настоящему, кривой базис искажает весь мир.
 // ============================================================
 "use strict";
 
@@ -368,1298 +347,1319 @@ const f2 = x => (Math.round(x * 100) / 100).toFixed(2);
 
 const LEVELS = [
 
-// ---------------------------------------------------------- 0
+// ------------------------------------------------------------ 0
 {
-  name: "Первый вектор", deck: "Палуба 0 · Ангар", accent: "#2563eb",
+  name: "Первая тяга", zone: "Сектор 0 · Открытый космос",
+  flight: true,
   intro: [
-    "ИРИС: Наконец-то ты включился, В.Е.К.-Т0Р! Авария разбила координатное ядро корабля.",
-    "ИРИС: Двери теперь понимают только язык векторов. Вектор — это стрелка: «сколько вправо, сколько вверх».",
-    "ИРИС: Подойди к консоли (синяя площадка) и настрой стрелку, которую требует дверь."
+    "ИРИС: Двигатели онлайн, В.Е.К.-Т0Р! Этот корабль управляется ВЕКТОРОМ ТЯГИ.",
+    "ИРИС: Потяни мышкой от корабля — появится стрелка: куда и как далеко лететь. Потом жми «Тяга!».",
+    "ИРИС: Долети до стыковочного кольца. Промахнёшься — прицелься заново и дай ещё импульс."
   ],
-  puzzle: {
-    type: "drag",
-    goalText: "Дверь требует вектор [2, 1]: 2 клетки вправо, 1 вверх. Перетащи кончик стрелки.",
-    vectors: [{ start: [3, -2], color: "#38bdf8", label: "v", draggable: true, snap: 1 }],
-    info(PZ) {
-      const v = PZ.v[0];
-      return `Твоя стрелка: <b>[${v[0]}, ${v[1]}]</b><br>Нужно: <b>[2, 1]</b>`;
-    },
-    check(PZ) { return M.близкиВекторы(PZ.v[0], [2, 1]); },
+  world: {
+    ship: [-4, -2],
+    dock: { pos: [3, 2], r: 0.5 },
+    fuel: null,
   },
+  tools: [],
+  objectives: [
+    { id: "dock", text: "Состыковаться с кольцом", check: S => S.docked },
+  ],
   journal: {
-    title: "Вектор",
-    words: "Вектор — это стрелка: направление плюс длина. Числа говорят, сколько шагов по каждой оси.",
-    formula: "v = [2, 1] — «2 вправо, 1 вверх»",
-    code: "v = np.array([2, 1])",
+    title: "Вектор тяги",
+    words: "Вектор — это направление плюс длина. Корабль сместится ровно на столько, какова стрелка: её числа — «сколько вправо, сколько вверх».",
+    formula: "новая позиция = старая + v",
+    code: "pos = pos + v",
   },
   question: {
-    q: "Что означает вектор [0, 3]?",
-    options: ["3 шага вправо", "3 шага вверх", "точку с номером 3"],
+    q: "Корабль в точке [0, 0]. Ты дал тягу [2, -3]. Где корабль?",
+    options: ["[2, 3]", "[2, -3]", "[-2, 3]"],
     correct: 1,
   },
   hints: [
-    "Дверь написала на себе два числа — это и есть рецепт стрелки.",
-    "Первое число — насколько вправо, второе — насколько вверх.",
-    "Перетащи кончик стрелки в точку: 2 клетки вправо и 1 вверх от центра.",
+    "Зажми мышку на пустом месте и потяни — стрелка тяги пойдёт от корабля.",
+    "Кольцо правее и выше. Стрелка должна закончиться прямо в нём.",
+    "От корабля до кольца: 7 вправо и 4 вверх — вектор [7, 4]. Потом «Тяга!».",
   ],
 },
 
-// ---------------------------------------------------------- 1
+// ------------------------------------------------------------ 1
 {
-  name: "Дверь длины 5", deck: "Палуба 1 · Реакторная", accent: "#f59e0b",
+  name: "Цена длины", zone: "Сектор 1 · Топливное поле",
+  flight: true,
   intro: [
-    "ИРИС: Реакторная. Здесь длина вектора — это ЭНЕРГИЯ. Чем длиннее стрелка, тем сильнее заряд.",
-    "ИРИС: Длина считается по теореме Пифагора: корень из суммы квадратов координат.",
-    "ИРИС: Двери нужен заряд ровно 5. Подбери стрелку!"
+    "ИРИС: Плохие новости: топлива в обрез. Двигатель сжигает ровно столько топлива, какова ДЛИНА вектора тяги.",
+    "ИРИС: Длина считается по Пифагору: корень из суммы квадратов. Смотри на счётчик — он живой.",
+    "ИРИС: До дока топлива хватит только по прямой. Целься точно!"
   ],
-  puzzle: {
-    type: "drag",
-    goalText: "Найди вектор длины РОВНО 5 (координаты — целые числа). Решений несколько!",
-    vectors: [{ start: [2, 1], color: "#f59e0b", label: "v", draggable: true, snap: 1 }],
-    info(PZ) {
-      const v = PZ.v[0], n = M.norm(v);
-      return `v = <b>[${v[0]}, ${v[1]}]</b><br>` +
-        `Пифагор: √(${v[0]}² + ${v[1]}²) = √${v[0]*v[0] + v[1]*v[1]} = <b>${f2(n)}</b><br>` +
-        `Нужна длина: <b>5</b>`;
-    },
-    check(PZ) { return M.близко(M.norm(PZ.v[0]), 5, 1e-9); },
+  world: {
+    ship: [-4, -2],
+    dock: { pos: [-1, 2], r: 0.5 },
+    fuel: 5.4, par: 5.05,
   },
+  tools: [],
+  objectives: [
+    { id: "dock", text: "Состыковаться (топлива всего 5.4)", check: S => S.docked },
+  ],
   journal: {
-    title: "Длина вектора",
-    words: "Длина стрелки — это гипотенуза треугольника из её координат. Квадраты складываем, берём корень.",
-    formula: "|v| = √(x² + y²);  |[3, 4]| = √25 = 5",
+    title: "Длина вектора = расход",
+    words: "Длина стрелки — гипотенуза треугольника из её координат: корень из суммы квадратов. Двигатель платит топливом за каждую единицу длины.",
+    formula: "|v| = √(x² + y²);  |[3, 4]| = 5",
     code: "la.norm(v)",
   },
   question: {
-    q: "Чему равна длина вектора [6, 8]?",
-    options: ["14", "10", "48"],
+    q: "Сколько топлива сожжёт тяга [6, 8]?",
+    options: ["14", "10", "6.8"],
     correct: 1,
   },
   hints: [
-    "Смотри на живой подсчёт под стрелкой: сумма квадратов должна стать 25.",
-    "Вспомни знаменитый треугольник: 3, 4 и... ?",
-    "Подойдут [3, 4], [4, 3], [0, 5], [5, 0] и их отрицательные варианты.",
+    "Посмотри на панель: там живой Пифагор для твоей стрелки.",
+    "От корабля до дока: 3 вправо, 4 вверх. Знакомый треугольник?",
+    "Вектор [3, 4] имеет длину ровно 5 — топлива хватит. Любой крюк — уже нет.",
   ],
 },
 
-// ---------------------------------------------------------- 2
+// ------------------------------------------------------------ 2
 {
-  name: "Калибровка", deck: "Палуба 2 · Калибровочная", accent: "#10b981",
+  name: "Обход астероида", zone: "Сектор 2 · Пояс обломков",
+  flight: true,
   intro: [
-    "ИРИС: Иногда важна не сила, а НАПРАВЛЕНИЕ. Приёмник берёт только векторы длиной ровно 1 — единичные.",
-    "ИРИС: Машина «Нормализатор» делит вектор на его длину: направление то же, длина становится 1.",
-    "ИРИС: Наведи стрелку на маяк (пунктирный луч) и нормализуй!"
+    "ИРИС: Прямо по курсу астероид. В лоб нельзя — двигатели глушатся при ударе.",
+    "ИРИС: Плана из ОДНОЙ стрелки мало. Построй маршрут: наведи первую, жми «+ Добавить вектор», наведи вторую.",
+    "ИРИС: Заметь: итог пути — это СУММА векторов. Я подсвечу её пунктиром."
   ],
-  puzzle: {
-    type: "drag",
-    goalText: "Сделай ЕДИНИЧНЫЙ вектор, смотрящий вдоль маяка (пунктирный луч). Наведи стрелку на луч, потом жми «Нормализовать».",
-    vectors: [{ start: [4, 1], color: "#10b981", label: "v", draggable: true, snap: 1 }],
-    beacon: [0.6, 0.8],
-    buttons: [{ id: "normalize", label: "⚙ Нормализовать (v / |v|)" }],
-    info(PZ) {
-      const v = PZ.v[0], n = M.norm(v);
-      return `v = <b>[${f2(v[0])}, ${f2(v[1])}]</b> · длина = <b>${f2(n)}</b><br>` +
-        `Нужно: длина <b>1</b>, направление — вдоль маяка`;
-    },
-    check(PZ) {
-      const v = PZ.v[0];
-      if (!M.близко(M.norm(v), 1, 0.01)) return false;
-      return M.dot(M.normalize(v), [0.6, 0.8]) > 0.999;
-    },
+  world: {
+    ship: [-4, 0],
+    dock: { pos: [4, 0], r: 0.5 },
+    asteroids: [{ pos: [0, 0], r: 1.6 }],
+    fuel: 11, par: 10.3,
   },
+  tools: ["commit"],
+  objectives: [
+    { id: "dock", text: "Обогнуть астероид и состыковаться", check: S => S.docked },
+  ],
+  journal: {
+    title: "Сложение векторов",
+    words: "Пролетел по одной стрелке, потом по другой — итоговое смещение равно их сумме (по позициям). Маршрут из кусочков = один суммарный вектор.",
+    formula: "[4, 3] + [4, -3] = [8, 0]",
+    code: "v1 + v2",
+  },
+  question: {
+    q: "Корабль пролетел [2, 5], потом [3, -5]. Каково итоговое смещение?",
+    options: ["[5, 0]", "[5, 10]", "[6, -25]"],
+    correct: 0,
+  },
+  hints: [
+    "Первая стрелка — вверх и вправо, мимо камня. Потом «+ Добавить вектор».",
+    "Например: [4, 3], затем [4, -3]. Сумма даст [8, 0] — ровно до дока.",
+    "Топлива 11, а такой маршрут стоит 5 + 5 = 10. Запас есть — жми «Тяга!».",
+  ],
+},
+
+// ------------------------------------------------------------ 3
+{
+  name: "Стыковочный импульс", zone: "Сектор 3 · Хрупкий док",
+  flight: true,
+  intro: [
+    "ИРИС: Этот док старый: он принимает корабль только на импульсе ДЛИНОЙ РОВНО 1. Влетишь быстрее — отскочишь.",
+    "ИРИС: Подойди большим вектором поближе, а ПОСЛЕДНИЙ вектор сделай единичным.",
+    "ИРИС: Кнопка «Нормализовать» делит стрелку на её длину: направление то же, длина 1."
+  ],
+  world: {
+    ship: [-4, -1],
+    dock: { pos: [3, 1], r: 0.5, arriveLen: 1 },
+    fuel: 9.5, par: 8.4,
+  },
+  tools: ["commit", "normalize"],
+  objectives: [
+    { id: "dock", text: "Состыковаться на импульсе длиной 1", check: S => S.docked },
+  ],
   journal: {
     title: "Нормализация",
-    words: "Разделить вектор на его длину: направление сохраняется, длина становится 1. Такие векторы зовут единичными (e).",
+    words: "Разделить вектор на его длину: направление сохраняется, длина становится ровно 1. Идеально для точных манёвров.",
     formula: "e = v / |v|",
     code: "e = v / la.norm(v)",
   },
   question: {
-    q: "Что меняет нормализация у вектора?",
-    options: ["направление", "только длину (делает её 1)", "и то, и другое"],
-    correct: 1,
+    q: "Нормализовали вектор [0, 7]. Что получилось?",
+    options: ["[0, 1]", "[1, 1]", "[0, 0.7]"],
+    correct: 0,
   },
   hints: [
-    "Сначала наведи стрелку на пунктирный луч. Длина пока не важна!",
-    "Подойдёт, например, [3, 4] — он смотрит ровно вдоль маяка.",
-    "Теперь жми «Нормализовать»: [3, 4] / 5 = [0.6, 0.8]. Длина 1, направление то же.",
+    "План из двух векторов: большой подлёт + маленький финиш.",
+    "Наведи последнюю стрелку прямо в кольцо (любой длины), затем «Нормализовать».",
+    "Например: [6, 1.5] и потом [1, 0.5] → нормализовать → длина 1, направление в док.",
   ],
 },
 
-// ---------------------------------------------------------- 3
+// ------------------------------------------------------------ 4
 {
-  name: "Сенсор перпендикулярности", deck: "Палуба 3 · Сенсорная", accent: "#8b5cf6",
+  name: "Мост из света", zone: "Сектор 4 · Разлом",
+  flight: false, beamLevel: true,
   intro: [
-    "ИРИС: Это сенсор совпадения направлений. Он показывает СКАЛЯРНОЕ ПРОИЗВЕДЕНИЕ двух векторов.",
-    "ИРИС: Смотрят в одну сторону — большой плюс. Навстречу — минус. А если под прямым углом — ровно НОЛЬ.",
-    "ИРИС: Замок открывается на нуле. Поставь свою антенну перпендикулярно фиолетовой!"
+    "ИРИС: Грузовой дрон не перелетит разлом — ему нужен мост. Смотри: прожектор отбрасывает ТЕНЬ твоей балки на рельсу.",
+    "ИРИС: Тень — это проекция: (v·e)e. Её длина — скалярное произведение балки с направлением рельсы.",
+    "ИРИС: Разлом шириной ровно 3. Сделай тень длиной 3 — и мост сомкнётся. Тяни за кончик балки!"
   ],
-  puzzle: {
-    type: "drag",
-    goalText: "Поверни СИНЮЮ антенну так, чтобы сенсор показал 0 — тогда антенны перпендикулярны.",
-    vectors: [
-      { start: [2, 1], color: "#8b5cf6", label: "a", draggable: false },
-      { start: [3, 2], color: "#38bdf8", label: "b", draggable: true, snap: 1 },
-    ],
-    meter: true,
-    info(PZ) {
-      const a = PZ.v[0], b = PZ.v[1], d = M.dot(a, b);
-      return `a = <b>[${a[0]}, ${a[1]}]</b>, b = <b>[${f2(b[0])}, ${f2(b[1])}]</b><br>` +
-        `a · b = ${a[0]}·${f2(b[0])} + ${a[1]}·${f2(b[1])} = <b>${f2(d)}</b><br>` +
-        `Нужно: <b>0</b>`;
-    },
-    check(PZ) {
-      return M.близко(M.dot(PZ.v[0], PZ.v[1]), 0, 1e-9) && M.norm(PZ.v[1]) > 0.5;
-    },
+  world: {
+    ship: [-4.3, -2.6],
+    beam: { base: [-2.6, 1.8], v0: [2, 1] },
+    rail: { p0: [-2.6, -1.4], e: [0.8, 0.6], need: 3 },
+    fuel: null,
   },
+  tools: ["drone"],
+  objectives: [
+    { id: "bridge", text: "Собрать мост: тень длиной ровно 3", check: S => S.shadowOk },
+    { id: "drone", text: "Провести дрон через разлом", check: S => S.droneDone },
+  ],
   journal: {
-    title: "Скалярное произведение",
-    words: "Перемножь координаты по позициям и сложи. Ноль — векторы перпендикулярны. Это «прибор для прямых углов».",
-    formula: "a · b = a₁b₁ + a₂b₂;  ноль ⇔ угол 90°",
-    code: "a @ b",
-  },
-  question: {
-    q: "Скалярное произведение двух векторов равно нулю. Что это значит?",
-    options: ["один из них нулевой", "они перпендикулярны", "они одинаковой длины"],
-    correct: 1,
-  },
-  hints: [
-    "Крути синюю стрелку и смотри на прибор: число меняется плавно.",
-    "a = [2, 1]. Нужно b, чтобы 2·b₁ + 1·b₂ = 0.",
-    "Например, b = [-1, 2]: 2·(-1) + 1·2 = 0. Или [1, -2], или [-2, 4].",
-  ],
-},
-
-// ---------------------------------------------------------- 4
-{
-  name: "Тень длины 2", deck: "Палуба 4 · Прожекторная", accent: "#ef4444",
-  intro: [
-    "ИРИС: Прожектор светит поперёк рельсы. Любая стрелка отбрасывает на рельсу ТЕНЬ — проекцию.",
-    "ИРИС: Длина тени — это скалярное произведение стрелки с единичным направлением рельсы.",
-    "ИРИС: Мост из тени выдержит робота только при длине ровно 2. Подбери стрелку!"
-  ],
-  puzzle: {
-    type: "drag",
-    goalText: "Двигай стрелку так, чтобы её ТЕНЬ на рельсе (красная) была длиной ровно 2.",
-    vectors: [{ start: [3, 3], color: "#38bdf8", label: "v", draggable: true, snap: 0.5 }],
-    rail: [0.8, 0.6],
-    info(PZ) {
-      const v = PZ.v[0], e = PZ.cfg.rail, d = M.dot(v, e);
-      return `v = <b>[${f2(v[0])}, ${f2(v[1])}]</b><br>` +
-        `длина тени: v · e = <b>${f2(d)}</b><br>Нужно: <b>2</b>`;
-    },
-    check(PZ) { return M.близко(M.dot(PZ.v[0], PZ.cfg.rail), 2, 0.051); },
-  },
-  journal: {
-    title: "Проекция (тень)",
-    words: "Тень вектора на ось: скалярное произведение даёт длину тени, умножение на ось кладёт её вдоль оси.",
-    formula: "тень = (v · e) e",
+    title: "Проекция — тень",
+    words: "Тень вектора на ось: скалярное произведение (v·e) даёт длину тени, умножение на ось кладёт её вдоль оси. Тень — это «сколько вектора лежит вдоль направления».",
+    formula: "тень = (v · e) e;  длина тени = v · e",
     code: "(v @ e) * e",
   },
   question: {
-    q: "Вектор перпендикулярен рельсе. Какой будет его тень?",
-    options: ["такой же, как вектор", "нулевой — тени нет", "длины 1"],
+    q: "Балка перпендикулярна рельсе. Какой длины мост-тень она даст?",
+    options: ["длиной с балку", "нулевой — моста не будет", "длиной 1"],
     correct: 1,
   },
   hints: [
-    "Тень зависит и от длины стрелки, и от угла к рельсе.",
-    "Смотри на число «v · e» — подгони его к 2.",
-    "Например, [1, 2]: 0.8·1 + 0.6·2 = 2.0. Или [2.5, 0].",
+    "Тяни за кончик светящейся балки. Длина тени показана на панели.",
+    "Тень зависит и от длины балки, и от угла: v · e = 0.8·x + 0.6·y.",
+    "Подойдёт балка [1.5, 3]: 0.8·1.5 + 0.6·3 = 3.0. Или [3, 1]. Потом запускай дрон.",
   ],
 },
 
-// ---------------------------------------------------------- 5
+// ------------------------------------------------------------ 5
 {
-  name: "Вычесть тень", deck: "Палуба 5 · Мастерская", accent: "#ec4899",
+  name: "Перпендикулярный канал", zone: "Сектор 5 · Силовое поле",
+  flight: true,
   intro: [
-    "ИРИС: Главный инструмент ремонта! Если из стрелки ВЫЧЕСТЬ её тень, остаётся часть, ПЕРПЕНДИКУЛЯРНАЯ рельсе.",
-    "ИРИС: Замок «⊥» принимает только единичный вектор, перпендикулярный рельсе.",
-    "ИРИС: Вычти тень, потом нормализуй. Действуй!"
+    "ИРИС: Впереди силовое поле. Внутри него лететь можно ТОЛЬКО перпендикулярно линиям поля — иначе выкинет.",
+    "ИРИС: Наведи вектор прямо на док и нажми «Разложить»: я разрежу его на тень (вдоль поля) и перпендикуляр.",
+    "ИРИС: Сначала пролетишь вдоль поля снаружи, потом перпендикулярно — сквозь. Это разложение вектора на части!"
   ],
-  puzzle: {
-    type: "drag",
-    goalText: "Получи ЕДИНИЧНЫЙ вектор, ПЕРПЕНДИКУЛЯРНЫЙ рельсе: «Вычесть тень», затем «Нормализовать».",
-    vectors: [{ start: [3, 1], color: "#38bdf8", label: "v", draggable: true, snap: 1 }],
-    rail: [0.8, 0.6],
-    buttons: [
-      { id: "subshadow", label: "✂ Вычесть тень (v − (v·e)e)" },
-      { id: "normalize", label: "⚙ Нормализовать (v / |v|)" },
-    ],
-    info(PZ) {
-      const v = PZ.v[0], e = PZ.cfg.rail;
-      return `v = <b>[${f2(v[0])}, ${f2(v[1])}]</b> · длина = <b>${f2(M.norm(v))}</b><br>` +
-        `v · e = <b>${f2(M.dot(v, e))}</b> (нужно 0) · длина (нужно 1)`;
-    },
-    check(PZ) {
-      const v = PZ.v[0];
-      return M.близко(M.norm(v), 1, 0.01) && M.близко(M.dot(v, PZ.cfg.rail), 0, 0.01);
-    },
+  world: {
+    ship: [-3, -2.5],
+    dock: { pos: [2, 2.5], r: 0.5 },
+    field: { y0: -0.8, y1: 0.8, e: [1, 0] },
+    fuel: 11, par: 10.3,
   },
+  tools: ["commit", "decompose"],
+  objectives: [
+    { id: "dock", text: "Пересечь поле и состыковаться", check: S => S.docked },
+  ],
   journal: {
-    title: "Вычитание тени",
-    words: "Убери из вектора всё, что смотрит вдоль оси, — останется только то, что смотрит поперёк. Сердце Грама–Шмидта!",
-    formula: "u = v − (v · e) e   ⇒   u ⊥ e",
+    title: "Разложение: тень + перпендикуляр",
+    words: "Любой вектор = его тень на ось + перпендикулярная часть. Вычесть тень — значит оставить только перпендикуляр. Это сердце Грама–Шмидта.",
+    formula: "v = (v·e)e + (v − (v·e)e)",
     code: "u = v - (v @ e) * e",
   },
   question: {
-    q: "Зачем мы вычитаем тень из вектора?",
+    q: "Зачем вычитать из вектора его тень на ось?",
     options: [
       "чтобы вектор стал короче",
-      "чтобы убрать часть, которая уже лежит вдоль старого направления",
+      "чтобы осталась только часть, перпендикулярная оси",
       "чтобы вектор стал длиной 1",
     ],
     correct: 1,
   },
   hints: [
-    "Порядок важен только для скорости: сначала «Вычесть тень», потом «Нормализовать».",
-    "После вычитания тени проверь: v · e стало нулём. Осталось сделать длину 1.",
-    "Если стрелка растворилась — она лежала прямо на рельсе. Перетащи её в сторону и попробуй снова.",
+    "Наведи одну стрелку прямо на док, сквозь поле.",
+    "Теперь «Разложить»: получится два вектора — вдоль поля и поперёк.",
+    "Вектор [5, 5] разложится в [5, 0] + [0, 5]: сначала вдоль, потом перпендикулярно сквозь поле.",
   ],
 },
 
-// ---------------------------------------------------------- 6
+// ------------------------------------------------------------ 6
 {
-  name: "Гироскоп: две оси", deck: "Палуба 6 · Гироскопная", accent: "#22d3ee",
+  name: "Зеркальный луч", zone: "Сектор 6 · Ретранслятор",
+  flight: true,
   intro: [
-    "ИРИС: Гироскоп держит палубу ровно, но ему нужен ОРТОНОРМИРОВАННЫЙ базис: все оси длиной 1 и все перпендикулярны.",
-    "ИРИС: У нас только кривые векторы v1 и v2. Проведи их через процесс Грама–Шмидта!",
-    "ИРИС: Выбирай вектор щелчком, применяй операции. Готовые оси гироскоп заберёт сам."
+    "ИРИС: Док обесточен. Энерголуч идёт слева, но приёмник — внизу. Нужно зеркало!",
+    "ИРИС: Возьмись за РУЧКУ зеркала и поворачивай: луч отражается по-настоящему, каждый кадр считается матрица отражения.",
+    "ИРИС: Попади лучом в приёмник — док оживёт. Потом стыкуйся."
   ],
-  puzzle: {
-    type: "gyro",
-    goalText: "Собери 2 оси: выбери v1 → «Нормализовать». Выбери v2 → «Вычесть тень на e1» → «Нормализовать».",
-    vectors: [
-      { start: [3, 4], color: "#38bdf8", label: "v1" },
-      { start: [2, 1], color: "#f59e0b", label: "v2" },
-    ],
-    slots: 2,
+  world: {
+    ship: [-4, -2.5],
+    dock: { pos: [4, 2.3], r: 0.5, needPower: true },
+    laser: { pos: [-4.6, 1], dir: [1, 0] },
+    mirrors: [{ c: [2, 1], ang: 0.35, len: 1.4 }],
+    receivers: [{ pos: [2, -2.4], r: 0.3 }],
+    fuel: null,
   },
+  tools: [],
+  objectives: [
+    { id: "power", text: "Направить луч в приёмник", check: S => S.powered },
+    { id: "dock", text: "Состыковаться с ожившим доком", check: S => S.docked },
+  ],
   journal: {
-    title: "Грам–Шмидт (2 вектора)",
-    words: "Первый вектор нормализуем. Из второго вычитаем тень на первую ось и нормализуем остаток. Получаются две оси под 90°.",
-    formula: "e1 = v1/|v1|;  u2 = v2 − (v2·e1)e1;  e2 = u2/|u2|",
-    code: "B[:, 1] = B[:, 1] - B[:, 1] @ B[:, 0] * B[:, 0]",
+    title: "Отражение — это матрица",
+    words: "Зеркало не «волшебное»: направление луча умножается на матрицу отражения. Вдоль зеркала луч сохраняется, поперёк — переворачивается.",
+    formula: "d' = T · d,  T = E·TE·Eᵀ",
+    code: "d_new = T @ d",
   },
   question: {
-    q: "Почему нельзя просто нормализовать v2 и сунуть его в гироскоп?",
+    q: "Луч летит вправо [1, 0] и попадает в зеркало, наклонённое как «\\». Куда он отразится?",
+    options: ["обратно влево", "вниз", "вверх"],
+    correct: 1,
+  },
+  hints: [
+    "Тяни за маленький кружок на конце зеркала — оно вращается.",
+    "Луч идёт слева направо на высоте дока с зеркалом. Приёмник — строго под зеркалом.",
+    "Поставь зеркало «\\» — под 45° (направление [1, -1]) — луч уйдёт вертикально вниз.",
+  ],
+},
+
+// ------------------------------------------------------------ 7
+{
+  name: "Двойное отражение", zone: "Сектор 7 · Лабиринт",
+  flight: true,
+  intro: [
+    "ИРИС: Теперь приёмник вообще слева внизу, за обломками. Одним зеркалом не обойтись.",
+    "ИРИС: Два зеркала — два отражения. Крути оба, проведи луч зигзагом.",
+  ],
+  world: {
+    ship: [-4, -2.6],
+    dock: { pos: [3.8, -0.4], r: 0.5, needPower: true },
+    laser: { pos: [-4.6, 1.2], dir: [1, 0] },
+    mirrors: [
+      { c: [1.6, 1.2], ang: 0.25, len: 1.3 },
+      { c: [1.6, -2.1], ang: 1.15, len: 1.3 },
+    ],
+    receivers: [{ pos: [-2.2, -2.1], r: 0.3 }],
+    asteroids: [{ pos: [-0.6, -0.3], r: 0.7 }],
+    fuel: null,
+  },
+  tools: [],
+  objectives: [
+    { id: "power", text: "Провести луч через два зеркала в приёмник", check: S => S.powered },
+    { id: "dock", text: "Состыковаться", check: S => S.docked },
+  ],
+  journal: {
+    title: "Композиция отражений",
+    words: "Каждое зеркало умножает направление луча на свою матрицу. Два зеркала подряд — произведение матриц: преобразования соединяются умножением.",
+    formula: "d' = T₂ · (T₁ · d)",
+    code: "d_new = T2 @ T1 @ d",
+  },
+  question: {
+    q: "Луч отразился от двух зеркал. Как записать итоговое преобразование?",
+    options: ["T1 + T2", "T2 @ T1", "T1 - T2"],
+    correct: 1,
+  },
+  hints: [
+    "Первое зеркало должно послать луч ВНИЗ, ко второму.",
+    "Первое — «\\» (как [1, -1]), луч уйдёт вниз ко второму зеркалу.",
+    "Второе — «/» (как [1, 1]), луч повернёт налево, прямо в приёмник.",
+  ],
+},
+
+// ------------------------------------------------------------ 8
+{
+  name: "Сломанный сектор", zone: "Сектор 8 · Искажение",
+  flight: true,
+  intro: [
+    "ИРИС: ...здесь что-то не так. БАЗИС сектора повреждён: оси не перпендикулярны и не единичны!",
+    "ИРИС: Смотри, как перекошена сетка. Глазам верить нельзя: стрелка выглядит короткой, а топлива жрёт как длинная.",
+    "ИРИС: Подлети к ядру сектора (шестиугольник) и почини оси процессом Грама–Шмидта. Док не примет корабль, пока сектор кривой."
+  ],
+  world: {
+    ship: [-3, -1.6],
+    dock: { pos: [2.6, 1.6], r: 0.5, needBasis: true },
+    core: { pos: [0, 0], b1: [1.3, 0], b2: [0.7, 1.1] },
+    fuel: 9, par: 6.7,
+  },
+  tools: [],
+  objectives: [
+    { id: "basis", text: "Починить базис у ядра (Грам–Шмидт)", check: S => S.basisStep >= 3 },
+    { id: "dock", text: "Состыковаться в выпрямленном секторе", check: S => S.docked },
+  ],
+  journal: {
+    title: "Ортонормированный базис",
+    words: "Пока оси кривые — весь мир врёт: длины, углы, расстояния. Грам–Шмидт чинит оси: нормализовать первую, из второй вычесть тень и нормализовать. Мир выпрямляется.",
+    formula: "e1 = b1/|b1|;  u2 = b2 − (b2·e1)e1;  e2 = u2/|u2|",
+    code: "E = gsBasis(bearBasis)",
+  },
+  question: {
+    q: "Почему в кривом базисе нельзя доверять глазам?",
     options: [
-      "можно, гироскоп просто капризничает",
-      "он ещё не перпендикулярен e1 — сначала надо вычесть тень",
-      "потому что v2 короче v1",
+      "потому что темно",
+      "оси не единичны и не перпендикулярны — длины и углы искажаются",
+      "потому что корабль неисправен",
     ],
     correct: 1,
   },
   hints: [
-    "Щёлкни по вектору, чтобы выбрать его. Начни с v1.",
-    "v1 = [3, 4]: после нормализации станет [0.6, 0.8] и защёлкнется как e1.",
-    "Теперь v2: «Вычесть тень на e1» даст [0.8, −0.6] — уже единичный! Нормализуй для верности — и в слот.",
+    "Сначала подлети к ядру — кнопки починки появятся рядом с ним.",
+    "Порядок Грама–Шмидта: нормализовать b1 → вычесть из b2 тень на e1 → нормализовать b2.",
+    "После починки мир станет ровным, и топлива до дока хватит с запасом.",
   ],
 },
 
-// ---------------------------------------------------------- 7
+// ------------------------------------------------------------ 9
 {
-  name: "Исчезнувшая ось", deck: "Палуба 6 · Гироскопная (нижний ярус)", accent: "#22d3ee",
+  name: "Зеркальный щит", zone: "Сектор 9 · Ядро корабля",
+  flight: false, conveyorLevel: true,
   intro: [
-    "ИРИС: Здесь три вектора, а слотов в гироскопе... посмотрим. Делай Грам–Шмидт как обычно.",
-    "ИРИС: Предупреждаю: с третьим вектором что-то не так. Не пугайся того, что случится."
+    "ИРИС: Финал. Маяк шлёт энерголуч, и зеркальный щит должен отразить его в станцию. Но щит НАКЛОННЫЙ, и его процессор пуст.",
+    "ИРИС: Программа щита — три блока: перевести луч в координаты щита (Eᵀ), отразить простой матрицей (TE), вернуть обратно (E).",
+    "ИРИС: Собери программу в правильном порядке и прошей щит. Неправильный порядок — луч уйдёт в никуда: сам увидишь."
   ],
-  puzzle: {
-    type: "gyro",
-    goalText: "Обработай ВСЕ три вектора. Порядок: v1 → нормализовать; v2 → вычесть тень, нормализовать; v3 → вычесть ОБЕ тени...",
-    vectors: [
-      { start: [2, 0], color: "#38bdf8", label: "v1" },
-      { start: [1, 2], color: "#f59e0b", label: "v2" },
-      { start: [3, 2], color: "#ec4899", label: "v3" },   // v3 = v1 + v2 - зависимый!
-    ],
-    slots: 2,
-    expectDissolve: true,
+  world: {
+    ship: [-4.3, -2.7],
+    laser: { pos: [-4.6, 2.6], dirTo: [0, 0] },
+    shield: { c: [0, 0], dir: [2, 1], len: 1.8 },
+    station: { pos: null, r: 0.32 },   // позиция вычисляется движком по честной физике
+    fuel: null,
   },
+  tools: [],
+  objectives: [
+    { id: "prog", text: "Собрать программу щита из блоков", check: S => S.conv.ranOnce },
+    { id: "power", text: "Луч отражён точно в станцию", check: S => S.powered },
+  ],
   journal: {
-    title: "Зависимый вектор",
-    words: "Если после вычитания всех теней вектор исчез — он не нёс нового направления: его можно собрать из предыдущих. Число уцелевших осей — настоящее число направлений (ранг).",
-    formula: "v3 = v1 + v2  ⇒  u3 = 0",
-    code: "if la.norm(B[:, j]) < eps: B[:, j] = 0",
-  },
-  question: {
-    q: "Вектор растворился после вычитания теней. Что это значит?",
-    options: [
-      "мы ошиблись в вычислениях",
-      "он не добавлял нового направления — его можно собрать из остальных",
-      "он был слишком коротким",
-    ],
-    correct: 1,
-  },
-  hints: [
-    "Делай как на прошлом уровне: v1 нормализуй, v2 очисти и нормализуй.",
-    "Теперь v3: вычти тень на e1, потом тень на e2. Смотри внимательно...",
-    "v3 растворился, потому что v3 = v1 + v2. Он «не знал» ничего нового. Две оси — это и есть ответ.",
-  ],
-},
-
-// ---------------------------------------------------------- 8
-{
-  name: "Зеркало вдоль оси", deck: "Палуба 7 · Зеркальный отсек", accent: "#a3e635",
-  intro: [
-    "ИРИС: Зеркальный щит лежит ровно вдоль оси X. Отражение тут простое: «вдоль зеркала не трогаем, поперёк — переворачиваем».",
-    "ИРИС: То есть (x, y) превращается в (x, −y).",
-    "ИРИС: Маяк находится в точке [2, 3]. Щёлкни по клетке, где появится его отражение!"
-  ],
-  puzzle: {
-    type: "cell",
-    goalText: "Зеркало — толстая линия вдоль оси X. Маяк в [2, 3]. Щёлкни клетку, где будет его отражение.",
-    point: [2, 3],
-    target: [2, -3],
-  },
-  journal: {
-    title: "Простое отражение TE",
-    words: "В системе координат зеркала отражение элементарно: первая координата остаётся, вторая меняет знак.",
-    formula: "(x, y) → (x, −y);  TE = [[1, 0], [0, −1]]",
-    code: "TE = np.array([[1, 0], [0, -1]])",
-  },
-  question: {
-    q: "Куда матрица TE отправит точку [5, −2]?",
-    options: ["[−5, −2]", "[5, 2]", "[−5, 2]"],
-    correct: 1,
-  },
-  hints: [
-    "Зеркало горизонтальное. Отражение — по другую сторону, на той же вертикали.",
-    "Расстояние до зеркала сохраняется: было 3 клетки сверху — станет 3 клетки снизу.",
-    "Ответ: [2, −3].",
-  ],
-},
-
-// ---------------------------------------------------------- 9
-{
-  name: "Конвейер координат", deck: "Палуба 8 · Мостик", accent: "#fb923c",
-  intro: [
-    "ИРИС: А теперь зеркало НАКЛОННОЕ. Формулу для такого сходу не напишешь... и не надо!",
-    "ИРИС: Хитрость: ПЕРЕВЕДИ точку в координаты зеркала (блок Eᵀ), отрази там простым TE, ВЕРНИ обратно (блок E).",
-    "ИРИС: Собери конвейер из трёх блоков в правильном порядке и запусти точку!"
-  ],
-  puzzle: {
-    type: "conveyor",
-    goalText: "Расставь блоки: машина применяет их к точке СЛЕВА НАПРАВО. Каким должен быть порядок? Потом жми «Запустить».",
-    mirrorDir: [2, 1],
-    point: [0, 2.5],
-  },
-  journal: {
-    title: "Смена базиса",
-    words: "Перевести в удобные координаты → сделать простое действие → вернуться. В формуле блоки читаются СПРАВА НАЛЕВО.",
-    formula: "r' = E · TE · Eᵀ · r",
+    title: "Смена базиса: E·TE·Eᵀ",
+    words: "Перевести в удобные координаты, сделать простое действие, вернуться. К лучу блоки применяются по конвейеру, а в формуле читаются справа налево. Eᵀ вместо обратной матрицы — подарок ортонормированности.",
+    formula: "T = E · TE · Eᵀ,  E⁻¹ = Eᵀ",
     code: "T = E @ TE @ E.T",
   },
   question: {
-    q: "В формуле E·TE·Eᵀ·r какой блок применяется к точке ПЕРВЫМ?",
+    q: "В формуле E·TE·Eᵀ·d какой блок применяется к лучу ПЕРВЫМ?",
     options: ["E (левый)", "TE (средний)", "Eᵀ (правый)"],
     correct: 2,
   },
   hints: [
-    "Сначала точку надо ПЕРЕВЕСТИ в координаты зеркала. Какой блок переводит туда?",
-    "Порядок конвейера: Eᵀ (туда) → TE (отразить) → E (обратно).",
-    "В формуле T = E @ TE @ E.T всё наоборот, потому что формулы читаются справа налево!",
+    "Сначала луч надо ПЕРЕВЕСТИ в мир щита. Какой блок этим занимается?",
+    "Конвейер: Eᵀ (туда) → TE (отразить) → E (обратно). Попробуй и неправильно — посмотри, куда уйдёт луч!",
+    "В формуле T = E @ TE @ E.T порядок обратный, потому что формулы читаются справа налево.",
   ],
 },
 
-// ---------------------------------------------------------- 10
+// ------------------------------------------------------------ 10
 {
-  name: "Кодовая комната", deck: "Палуба 9 · Ядро", accent: "#e879f9",
-  intro: [
-    "ИРИС: Координатное ядро принимает только КОД. Хорошая новость: всё, что ты делал руками, уже записано в этих блоках.",
-    "ИРИС: Расставь строки кода в правильном порядке и запусти. Помни: нельзя использовать то, что ещё не создано!"
-  ],
-  puzzle: {
-    type: "code",
-    goalText: "Расставь строки в рабочем порядке (кнопки ↑/↓) и нажми «Запустить». Правило: строка может использовать только то, что создано ВЫШЕ.",
-    lines: [
-      { id: "T",  text: "T = E @ TE @ E.T", needs: ["E", "TE"] },
-      { id: "E",  text: "E = gsBasis(bearBasis)", needs: ["imp"] },
-      { id: "imp", text: "import numpy as np", needs: [] },
-      { id: "TE", text: "TE = np.array([[1, 0], [0, -1]])", needs: ["imp"] },
-    ],
-  },
-  journal: {
-    title: "Формула всей игры",
-    words: "Грам–Шмидт выпрямляет базис (E), в мире зеркала отражение простое (TE), а Eᵀ и E переводят туда и обратно. Для ортонормированной E обратная матрица — это просто транспонированная!",
-    formula: "T = E · TE · Eᵀ,  где E⁻¹ = Eᵀ",
-    code: "E = gsBasis(bearBasis)\nT = E @ TE @ E.T",
-  },
-  question: {
-    q: "Почему в коде пишут E.T, а не вычисляют обратную матрицу inv(E)?",
-    options: [
-      "inv в NumPy не существует",
-      "для ортонормированной матрицы обратная равна транспонированной",
-      "это просто короче писать, результат другой",
-    ],
-    correct: 1,
-  },
-  hints: [
-    "import должен быть раньше всех, кто пишет «np.» — то есть раньше TE.",
-    "Строка T использует и E, и TE — значит, она последняя.",
-    "Порядок: import → E (или TE) → TE (или E) → T.",
-  ],
-},
-
-// ---------------------------------------------------------- 11
-{
-  name: "Ядро восстановлено", deck: "Финал", accent: "#e879f9",
-  intro: [],
-  puzzle: { type: "final" },
-  journal: null,
-  question: null,
-  hints: [],
+  name: "Ядро восстановлено", zone: "Финал",
+  final: true,
+  intro: [], world: {}, tools: [], objectives: [],
+  journal: null, question: null, hints: [],
 },
 ];
 
-// ---- задачи для «Бесконечной лаборатории» (открывается после кампании) ----
-const ENDLESS_TASKS = [
-  {
-    make() {
-      const tri = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [0, 7, 7]][Math.floor(Math.random() * 4)];
-      return { kind: "len", need: tri[2],
-        text: `Сделай вектор длины ровно ${tri[2]}`,
-        vectors: [{ start: [2, 1], color: "#f59e0b", label: "v", draggable: true, snap: 1 }],
-        check(PZ) { return M.близко(M.norm(PZ.v[0]), this.need, 1e-9); } };
-    }
+// ---- генератор задач «Бесконечного полёта» ----
+const ENDLESS_GEN = [
+  // точная стыковка: топлива впритык
+  () => {
+    const dx = 4 + Math.floor(Math.random() * 5);
+    const dy = -3 + Math.floor(Math.random() * 7) || 2;
+    const dist = Math.hypot(dx, dy);
+    return {
+      name: "Точная стыковка", zone: "Бесконечный полёт", flight: true,
+      intro: [], tools: ["commit"],
+      world: { ship: [-4, -1], dock: { pos: [-4 + dx, -1 + dy], r: 0.5 },
+               fuel: dist + 0.4, par: null },
+      objectives: [{ id: "dock", text: "Стыковка (топлива впритык!)", check: S => S.docked }],
+      hints: [], journal: null, question: null,
+    };
   },
-  {
-    make() {
-      const a = [[2, 1], [3, 1], [1, 3], [2, 3], [1, -2]][Math.floor(Math.random() * 5)];
-      return { kind: "perp", a,
-        text: `Поставь синюю стрелку перпендикулярно фиолетовой [${a[0]}, ${a[1]}]`,
-        vectors: [
-          { start: a, color: "#8b5cf6", label: "a", draggable: false },
-          { start: [3, 2], color: "#38bdf8", label: "b", draggable: true, snap: 1 },
-        ],
-        meter: true,
-        check(PZ) { return M.близко(M.dot(PZ.v[0], PZ.v[1]), 0, 1e-9) && M.norm(PZ.v[1]) > 0.5; } };
-    }
+  // стыковка на единичном импульсе
+  () => {
+    const dx = 4 + Math.floor(Math.random() * 4);
+    const dy = -2 + Math.floor(Math.random() * 5);
+    return {
+      name: "Импульс 1.0", zone: "Бесконечный полёт", flight: true,
+      intro: [], tools: ["commit", "normalize"],
+      world: { ship: [-4, -1], dock: { pos: [-4 + dx, -1 + dy], r: 0.5, arriveLen: 1 },
+               fuel: Math.hypot(dx, dy) + 1.8, par: null },
+      objectives: [{ id: "dock", text: "Стыковка на импульсе ровно 1", check: S => S.docked }],
+      hints: [], journal: null, question: null,
+    };
   },
-  {
-    make() {
-      const need = [1, 2, 3][Math.floor(Math.random() * 3)];
-      return { kind: "shadow", need, rail: [0.8, 0.6],
-        text: `Сделай тень на рельсе длиной ровно ${need}`,
-        vectors: [{ start: [3, 3], color: "#38bdf8", label: "v", draggable: true, snap: 0.5 }],
-        check(PZ) { return M.близко(M.dot(PZ.v[0], PZ.cfg.rail), this.need, 0.051); } };
-    }
+  // мост из тени
+  () => {
+    const need = [2, 2.5, 3, 3.5][Math.floor(Math.random() * 4)];
+    return {
+      name: "Мост " + need, zone: "Бесконечный полёт", flight: false, beamLevel: true,
+      intro: [], tools: ["drone"],
+      world: { ship: [-4.3, -2.6], beam: { base: [-2.6, 1.8], v0: [2, 1] },
+               rail: { p0: [-2.6, -1.4], e: [0.8, 0.6], need }, fuel: null },
+      objectives: [
+        { id: "bridge", text: "Тень длиной ровно " + need, check: S => S.shadowOk },
+        { id: "drone", text: "Провести дрон", check: S => S.droneDone },
+      ],
+      hints: [], journal: null, question: null,
+    };
   },
 ];
 
 // ============================================================
-// ВЕКТОР: Ортонорма — игровой движок (прототип «Ступень A»)
-// Чистый canvas + DOM, без внешних библиотек.
-// Слои: комната (робот ходит) → головоломка (векторный стол)
-// → церемония (звёзды, вопрос, журнал).
+// ВЕКТОР: Ортонорма — движок (ревизия B)
+// Математика = физика мира: корабль летает по векторам тяги,
+// топливо = длина, зеркала отражают матрицами каждый кадр,
+// тень = мост, кривой базис искажает всю картинку и управление.
 // ============================================================
 "use strict";
 
 // ---------------- сохранение ----------------
-const SAVE_KEY = "vektor-ortonorma-v1";
+const SAVE_KEY = "vektor-ortonorma-v2";
 function loadSave() {
   try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; }
   catch (e) { return {}; }
 }
-function writeSave() { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
 const save = Object.assign({ unlocked: 0, stars: {}, journal: [], endlessBest: 0 }, loadSave());
-
-// ---------------- состояние ----------------
-const G = {
-  screen: "menu",        // menu | levels | game
-  level: 0,
-  mode: "campaign",      // campaign | endless
-  endless: { streak: 0, task: null },
-  hintsUsed: 0,
-  dlgQueue: [], dlgIdx: 0,
-  room: null,            // состояние комнаты
-  PZ: null,              // состояние головоломки
-  solvedThisLevel: false,
-};
+function writeSave() { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }
 
 const $ = id => document.getElementById(id);
+const cv = $("cv"), ctx = cv.getContext("2d");
+const SC = 85, OX = cv.width / 2, OY = cv.height / 2;
 
-// ---------------- переключение экранов ----------------
+// ---------------- глобальное состояние ----------------
+let S = null;            // состояние текущего сектора
+let G = { screen: "menu", level: 0, mode: "campaign", streak: 0, instant: false };
+
+function newState(L) {
+  const W = L.world;
+  const B0 = W.core ? M.matFromCols(W.core.b1, W.core.b2) : [[1, 0], [0, 1]];
+  S = {
+    L, W,
+    ship: { pos: W.ship.slice(), ang: 0 },
+    plan: { legs: [], cur: null },
+    fuelUsed: 0,
+    flying: null, trail: [],
+    B: B0.map(r => r.slice()), Binv: M.matInv(B0),
+    Bfrom: null, Btarget: null, Banim: 1,
+    basisStep: W.core ? 0 : 3,
+    mirrors: (W.mirrors || []).map(m => ({ c: m.c.slice(), ang: m.ang, len: m.len })),
+    beam: W.beam ? { v: W.beam.v0.slice() } : null,
+    shadowOk: false, droneT: null, droneDone: false,
+    laserSegs: [], powered: false,
+    conv: { slots: [null, null, null], C: null, ranOnce: false },
+    station: null,
+    docked: false, lastLegLen: 0,
+    objDone: {}, complete: false, hintsUsed: 0, hintLevel: 0,
+    msg: null, msgT: 0,
+    stars: makeStars(),
+    dlg: L.intro ? L.intro.slice() : [], dlgI: 0,
+    t: 0,
+  };
+  // станция финала: честная физика решает, где она стоит
+  if (W.shield) {
+    const dIn = M.normalize(M.sub(W.shield.c, W.laser.pos));
+    const T = M.reflectionMatrix(W.shield.dir);
+    S.station = { pos: M.add(W.shield.c, M.scale(2.9, M.matVec(T, dIn))), r: 0.32 };
+  }
+}
+
+function makeStars() {
+  const arr = [];
+  for (let i = 0; i < 90; i++)
+    arr.push({ x: Math.random() * cv.width, y: Math.random() * cv.height,
+               r: Math.random() * 1.4 + 0.3, a: Math.random() * 0.5 + 0.2 });
+  return arr;
+}
+
+// ---------------- координаты (через матрицу базиса B!) ----------------
+function toScr(p) {
+  const q = M.matVec(S.B, p);
+  return { x: OX + q[0] * SC, y: OY - q[1] * SC };
+}
+function fromScr(x, y) {
+  return M.matVec(S.Binv, [(x - OX) / SC, (OY - y) / SC]);
+}
+
+// ---------------- экраны ----------------
 function show(name) {
   ["menu", "levels", "game"].forEach(s => $("scr-" + s).classList.toggle("hidden", s !== name));
   G.screen = name;
 }
 
-// ============================================================
-// КОМНАТА: палуба с роботом
-// ============================================================
-const TILE = 68, COLS = 13, ROWS = 8;
-const roomCv = $("room"), rctx = roomCv.getContext("2d");
-const CONSOLE_POS = { x: 6, y: 3 }, DOOR_POS = { x: 12, y: 4 }, START_POS = { x: 1, y: 4 };
-
-function newRoom() {
-  G.room = {
-    bot: { x: START_POS.x, y: START_POS.y, px: START_POS.x, py: START_POS.y },
-    path: [],                 // очередь клеток для клика-навигации
-    doorOpen: false,
-    consoleDone: false,
-    t: 0,
-  };
-  G.solvedThisLevel = false;
-  G.hintsUsed = 0;
+// ---------------- сообщения и диалог ----------------
+function msg(text, good) { S.msg = { text, good }; S.msgT = 4; }
+function irisShow() {
+  const bar = $("iris");
+  if (S.dlgI < S.dlg.length) {
+    bar.classList.remove("hidden");
+    $("iris-text").textContent = S.dlg[S.dlgI];
+  } else bar.classList.add("hidden");
 }
-
-function walkable(x, y) {
-  if (y < 1 || y > ROWS - 2) return false;
-  if (x < 1) return false;
-  if (x > COLS - 2) return G.room.doorOpen && x === DOOR_POS.x && y === DOOR_POS.y;
-  return true;
-}
-
-// поиск пути в ширину — для управления кликом
-function bfsPath(from, to) {
-  if (!walkable(to.x, to.y)) return [];
-  const key = p => p.x + "," + p.y;
-  const prev = { [key(from)]: null };
-  const q = [from];
-  while (q.length) {
-    const c = q.shift();
-    if (c.x === to.x && c.y === to.y) {
-      const path = [];
-      let k = c;
-      while (k && !(k.x === from.x && k.y === from.y)) {
-        path.unshift(k); k = prev[key(k)];
-      }
-      return path;
-    }
-    for (const d of [[1,0],[-1,0],[0,1],[0,-1]]) {
-      const n = { x: c.x + d[0], y: c.y + d[1] };
-      if (walkable(n.x, n.y) && !(key(n) in prev)) { prev[key(n)] = c; q.push(n); }
-    }
-  }
-  return [];
-}
-
-function tryStep(dx, dy) {
-  if (G.PZ || !G.room || dialogActive()) return;
-  const b = G.room.bot;
-  if (Math.abs(b.px - b.x) > 0.15 || Math.abs(b.py - b.y) > 0.15) return; // ещё едет
-  const nx = b.x + dx, ny = b.y + dy;
-  if (walkable(nx, ny)) { b.x = nx; b.y = ny; G.room.path = []; onArrive(); }
-}
-
-function onArrive() {
-  const b = G.room.bot;
-  if (b.x === CONSOLE_POS.x && b.y === CONSOLE_POS.y && !G.solvedThisLevel) {
-    setTimeout(() => { if (!G.PZ) openPuzzle(); }, 180);
-  }
-  if (b.x === DOOR_POS.x && b.y === DOOR_POS.y && G.room.doorOpen) {
-    setTimeout(finishLevel, 220);
-  }
-}
-
-// ---------- отрисовка комнаты ----------
-function drawRoom() {
-  const L = LEVELS[G.level];
-  rctx.clearRect(0, 0, roomCv.width, roomCv.height);
-  G.room.t += 0.016;
-
-  // пол
-  for (let y = 0; y < ROWS; y++)
-    for (let x = 0; x < COLS; x++) {
-      const wall = !((y >= 1 && y <= ROWS - 2) && x >= 1 && x <= COLS - 2);
-      rctx.fillStyle = wall ? "#0a1128" : ((x + y) % 2 ? "#111c3f" : "#0f1938");
-      rctx.fillRect(x * TILE, y * TILE, TILE - 1, TILE - 1);
-    }
-
-  // консоль
-  const cp = CONSOLE_POS;
-  rctx.fillStyle = G.solvedThisLevel ? "#14532d" : "#1e3a8a";
-  rctx.fillRect(cp.x * TILE + 6, cp.y * TILE + 6, TILE - 13, TILE - 13);
-  rctx.strokeStyle = G.solvedThisLevel ? "#4ade80" : "#60a5fa";
-  rctx.lineWidth = 2.5;
-  rctx.strokeRect(cp.x * TILE + 6, cp.y * TILE + 6, TILE - 13, TILE - 13);
-  rctx.fillStyle = "#dbe4ff"; rctx.font = "22px system-ui"; rctx.textAlign = "center";
-  rctx.fillText(G.solvedThisLevel ? "✓" : "▲", cp.x * TILE + TILE / 2, cp.y * TILE + TILE / 2 + 8);
-
-  // дверь
-  const dp = DOOR_POS, glow = G.room.doorOpen ? (0.6 + 0.4 * Math.sin(G.room.t * 4)) : 0.15;
-  rctx.fillStyle = G.room.doorOpen ? `rgba(74,222,128,${glow * 0.5})` : "#1a2244";
-  rctx.fillRect(dp.x * TILE + 2, dp.y * TILE - TILE * 0.5, TILE - 4, TILE * 2);
-  rctx.strokeStyle = G.room.doorOpen ? "#4ade80" : "#35509f";
-  rctx.strokeRect(dp.x * TILE + 2, dp.y * TILE - TILE * 0.5, TILE - 4, TILE * 2);
-  rctx.fillStyle = G.room.doorOpen ? "#bbf7d0" : "#7f92c8"; rctx.font = "13px system-ui";
-  rctx.fillText(G.room.doorOpen ? "ОТКРЫТО" : "ЗАПЕРТО", dp.x * TILE + TILE / 2, dp.y * TILE - TILE * 0.5 - 8);
-
-  // плавное движение робота к цели / по пути
-  const b = G.room.bot, sp = 0.14;
-  if (Math.abs(b.px - b.x) < 0.01 && Math.abs(b.py - b.y) < 0.01 && G.room.path.length) {
-    const n = G.room.path.shift();
-    b.x = n.x; b.y = n.y;
-    if (!G.room.path.length) onArrive();
-    else if (n.x === CONSOLE_POS.x && n.y === CONSOLE_POS.y) { G.room.path = []; onArrive(); }
-  }
-  b.px += (b.x - b.px) * sp * 2.2;
-  b.py += (b.y - b.py) * sp * 2.2;
-
-  // робот
-  const rx = b.px * TILE + TILE / 2, ry = b.py * TILE + TILE / 2;
-  rctx.save();
-  rctx.strokeStyle = "#38bdf8"; rctx.lineWidth = 3;             // антенна
-  rctx.beginPath(); rctx.moveTo(rx, ry - 20); rctx.lineTo(rx, ry - 30); rctx.stroke();
-  rctx.fillStyle = "#38bdf8";
-  rctx.beginPath(); rctx.arc(rx, ry - 32, 3.4, 0, 7); rctx.fill();
-  const grd = rctx.createLinearGradient(rx, ry - 22, rx, ry + 22); // корпус
-  grd.addColorStop(0, "#3a4a80"); grd.addColorStop(1, "#222f5c");
-  rctx.fillStyle = grd; rctx.strokeStyle = "#4a5c9b"; rctx.lineWidth = 2;
-  roundRect(rctx, rx - 20, ry - 20, 40, 40, 13); rctx.fill(); rctx.stroke();
-  rctx.fillStyle = "#7dd3fc";                                    // глаз
-  rctx.beginPath(); rctx.arc(rx, ry - 3, 8, 0, 7); rctx.fill();
-  rctx.fillStyle = "#0b1020";
-  rctx.beginPath(); rctx.arc(rx + 2, ry - 4, 3.4, 0, 7); rctx.fill();
-  rctx.restore();
-}
-
-function roundRect(c, x, y, w, h, r) {
-  c.beginPath();
-  c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
-  c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
-}
-
-// управление комнатой
-window.addEventListener("keydown", e => {
-  if (G.screen !== "game") return;
-  if (dialogActive()) {
-    if (e.key === " " || e.key === "Enter") { advanceDialog(); e.preventDefault(); }
-    return;
-  }
-  if (G.PZ) return;
-  const map = { ArrowUp: [0,-1], ArrowDown: [0,1], ArrowLeft: [-1,0], ArrowRight: [1,0],
-                w: [0,-1], s: [0,1], a: [-1,0], d: [1,0],
-                ц: [0,-1], ы: [0,1], ф: [-1,0], в: [1,0] };
-  const d = map[e.key];
-  if (d) { tryStep(d[0], d[1]); e.preventDefault(); }
-});
-roomCv.addEventListener("pointerdown", e => {
-  if (dialogActive()) { advanceDialog(); return; }
-  if (G.PZ) return;
-  const r = roomCv.getBoundingClientRect();
-  const x = Math.floor((e.clientX - r.left) * roomCv.width / r.width / TILE);
-  const y = Math.floor((e.clientY - r.top) * roomCv.height / r.height / TILE);
-  G.room.path = bfsPath({ x: G.room.bot.x, y: G.room.bot.y }, { x, y });
-});
-
-// ---------------- диалоги ИРИС ----------------
-function startDialog(lines) {
-  if (!lines || !lines.length) { $("dialogue").classList.add("hidden"); return; }
-  G.dlgQueue = lines; G.dlgIdx = 0;
-  $("dialogue").classList.remove("hidden");
-  $("dlg-text").textContent = lines[0];
-}
-function dialogActive() { return !$("dialogue").classList.contains("hidden"); }
-function advanceDialog() {
-  G.dlgIdx++;
-  if (G.dlgIdx >= G.dlgQueue.length) $("dialogue").classList.add("hidden");
-  else $("dlg-text").textContent = G.dlgQueue[G.dlgIdx];
-}
-$("dialogue").addEventListener("click", advanceDialog);
+$("iris").addEventListener("click", () => { S.dlgI++; irisShow(); });
 
 // ============================================================
-// ГОЛОВОЛОМКА: векторный стол
+// ИНСТРУМЕНТЫ (нижняя панель)
 // ============================================================
-const pzCv = $("pz-canvas"), pctx = pzCv.getContext("2d");
-const PS = 44;                                  // пикселей на единицу
-const PCX = pzCv.width / 2, PCY = pzCv.height / 2;
-const toScr = p => ({ x: PCX + p[0] * PS, y: PCY - p[1] * PS });
-const toWorld = (x, y) => [(x - PCX) / PS, (PCY - y) / PS];
-
-function openPuzzle(customCfg) {
-  const L = LEVELS[G.level];
-  const cfg = customCfg || L.puzzle;
-  if (cfg.type === "final") { showFinal(); return; }
-
-  G.PZ = {
-    cfg, type: cfg.type,
-    v: (cfg.vectors || []).map(s => s.start.slice()),
-    locked: [],                    // оси, принятые гироскопом
-    dissolved: [],                 // индексы растворившихся векторов
-    selected: cfg.type === "gyro" ? null
-             : (cfg.vectors || []).findIndex(s => s.draggable),
-    solved: false,
-    conveyor: cfg.type === "conveyor" ? { slots: [null, null, null], ran: null } : null,
-    codeOrder: cfg.type === "code" ? cfg.lines.map((_, i) => i) : null,
-    cellPicked: null,
-    msg: "",
-    hintLevel: 0,
-  };
-  $("pz-title").textContent = (G.mode === "endless" ? "∞ " : "") +
-    (customCfg ? "Бесконечная лаборатория" : LEVELS[G.level].name);
-  $("pz-goal").textContent = cfg.goalText || cfg.text || "";
-  $("pz-hint-text").innerHTML = "";
-  $("pz-msg").textContent = "";
-  $("pz-hint").style.display = (G.mode === "endless") ? "none" : "";
-  buildPuzzleButtons();
-  $("puzzle").classList.remove("hidden");
-  drawPuzzle(); updatePuzzleInfo();
+function chainTail() {
+  let p = S.ship.pos.slice();
+  for (const l of S.plan.legs) p = M.add(p, l);
+  return p;
+}
+function planTarget() {           // вектор, к которому применяются операции
+  if (S.plan.cur && M.norm(S.plan.cur) > 1e-9) return "cur";
+  if (S.plan.legs.length) return "last";
+  return null;
+}
+function getTargetVec() {
+  const t = planTarget();
+  return t === "cur" ? S.plan.cur : (t === "last" ? S.plan.legs[S.plan.legs.length - 1] : null);
+}
+function setTargetVec(v) {
+  const t = planTarget();
+  if (t === "cur") S.plan.cur = v;
+  else if (t === "last") S.plan.legs[S.plan.legs.length - 1] = v;
 }
 
-function closePuzzle() { $("puzzle").classList.add("hidden"); G.PZ = null; }
-$("pz-close").addEventListener("click", () => {
-  if (G.mode === "endless") { endEndless(); return; }
-  closePuzzle();
-});
-
-// ---------- кнопки операций ----------
-function buildPuzzleButtons() {
-  const box = $("pz-buttons"); box.innerHTML = "";
-  const PZ = G.PZ, cfg = PZ.cfg;
-
-  if (PZ.type === "drag" && cfg.buttons) {
-    for (const b of cfg.buttons) {
-      const el = document.createElement("button");
-      el.textContent = b.label;
-      el.onclick = () => applyOp(b.id, PZ.selected);
-      box.appendChild(el);
+const TOOL_DEFS = {
+  commit: { label: "＋ Добавить вектор", fn: () => {
+    if (!S.plan.cur || M.norm(S.plan.cur) < 0.01) { msg("Сначала наведи стрелку!"); return; }
+    S.plan.legs.push(S.plan.cur); S.plan.cur = null;
+    msg("Вектор в плане. Наводи следующий — он пристроится к концу.");
+  }},
+  normalize: { label: "⚙ Нормализовать (v/|v|)", fn: () => {
+    const v = getTargetVec();
+    if (!v) { msg("Нет вектора: сначала наведи стрелку."); return; }
+    if (M.norm(v) < 1e-9) { msg("Нулевой вектор нельзя нормализовать!"); return; }
+    setTargetVec(M.normalize(v));
+    msg("Разделил на длину: направление то же, длина ровно 1.");
+  }},
+  decompose: { label: "✂ Разложить: тень + ⊥", fn: () => {
+    const v = getTargetVec();
+    if (!v) { msg("Сначала наведи стрелку на цель."); return; }
+    const e = S.W.field.e;
+    const ten = M.project(v, e), perp = M.sub(v, ten);
+    if (M.norm(ten) < 0.01 || M.norm(perp) < 0.01) {
+      msg("Вектор уже целиком вдоль или поперёк поля — раскладывать нечего."); return;
     }
-  }
+    if (planTarget() === "cur") S.plan.cur = null; else S.plan.legs.pop();
+    S.plan.legs.push(ten, perp);
+    msg("Разложено: сначала тень (вдоль поля), потом перпендикуляр (сквозь поле).");
+  }},
+  drone: { label: "🚚 Запустить дрон", fn: () => {
+    if (!S.shadowOk) { msg("Мост не готов: тень должна быть длиной ровно " + S.W.rail.need + "."); return; }
+    if (S.droneT == null && !S.droneDone) { S.droneT = 0; msg("Дрон пошёл по мосту!", true); }
+  }},
+  gs1: { label: "⚙ Нормализовать b1", fn: () => basisOp(1) },
+  gs2: { label: "✂ Вычесть из b2 тень на e1", fn: () => basisOp(2) },
+  gs3: { label: "⚙ Нормализовать b2", fn: () => basisOp(3) },
+};
 
-  if (PZ.type === "gyro") {
-    const mk = (label, fn, id) => {
-      const el = document.createElement("button");
-      el.textContent = label; el.onclick = fn; el.dataset.op = id;
-      box.appendChild(el); return el;
-    };
-    mk("⚙ Нормализовать (v / |v|)", () => applyOp("normalize", PZ.selected), "normalize");
-    mk("✂ Вычесть тень на e1", () => applyOp("subaxis0", PZ.selected), "subaxis0");
-    mk("✂ Вычесть тень на e2", () => applyOp("subaxis1", PZ.selected), "subaxis1");
-    refreshGyroButtons();
-  }
-
-  if (PZ.type === "conveyor") buildConveyorUI(box);
-  if (PZ.type === "code") buildCodeUI(box);
+function nearCore() {
+  return S.W.core && M.norm(M.sub(S.ship.pos, S.W.core.pos)) < 1.9;
 }
 
-function refreshGyroButtons() {
-  const PZ = G.PZ;
-  for (const el of $("pz-buttons").querySelectorAll("button")) {
-    if (el.dataset.op === "subaxis0") el.disabled = PZ.locked.length < 1;
-    if (el.dataset.op === "subaxis1") el.disabled = PZ.locked.length < 2;
-    if (el.dataset.op === "normalize") el.disabled = false;
-  }
-}
-
-// применить операцию к вектору с индексом i
-function applyOp(op, i) {
-  const PZ = G.PZ;
-  if (PZ.solved) return;
-  if (i == null || i < 0) { setMsg("Сначала выбери вектор щелчком по стрелке."); return; }
-  if (PZ.dissolved.includes(i) || isLockedIdx(i)) return;
-
-  if (op === "normalize") {
-    if (M.norm(PZ.v[i]) < 1e-9) { setMsg("Нулевую стрелку нельзя нормализовать!"); return; }
-    PZ.v[i] = M.normalize(PZ.v[i]);
-    setMsg("Разделили на длину: теперь длина 1.");
-  }
-  if (op === "subshadow") {
-    PZ.v[i] = M.subtractShadow(PZ.v[i], PZ.cfg.rail);
-    if (M.norm(PZ.v[i]) < 1e-9) {
-      setMsg("Стрелка растворилась — она лежала прямо на рельсе! Возвращаю исходную.");
-      PZ.v[i] = PZ.cfg.vectors[i].start.slice();
-    } else setMsg("Тень вычтена: осталась часть, перпендикулярная рельсе.");
-  }
-  if (op === "subaxis0" || op === "subaxis1") {
-    const ax = PZ.locked[op === "subaxis0" ? 0 : 1];
-    if (!ax) return;
-    PZ.v[i] = M.subtractShadow(PZ.v[i], ax.v);
-    if (M.norm(PZ.v[i]) < 1e-9) {
-      dissolve(i);
-    } else setMsg("Тень на " + ax.name + " вычтена.");
-  }
-
-  if (PZ.type === "gyro") tryLockAxis(i);
-  afterChange();
-}
-
-function isLockedIdx(i) { return G.PZ.locked.some(a => a.src === i); }
-
-function dissolve(i) {
-  const PZ = G.PZ;
-  PZ.dissolved.push(i);
-  PZ.v[i] = [0, 0];
-  setMsg("💨 " + PZ.cfg.vectors[i].label +
-    " растворился! Он не нёс нового направления — его можно собрать из уже готовых осей.");
-}
-
-// гироскоп сам забирает единичный вектор, перпендикулярный готовым осям
-function tryLockAxis(i) {
-  const PZ = G.PZ, v = PZ.v[i];
-  if (!M.близко(M.norm(v), 1, 0.01)) return;
-  for (const a of PZ.locked) {
-    const d = M.dot(v, a.v);
-    if (Math.abs(d) > 0.01) {
-      setMsg("Гироскоп отверг вектор: он не перпендикулярен " + a.name +
-        " (скалярное произведение = " + d.toFixed(2) + ", а нужно 0). Вычти тень!");
-      return;
-    }
-  }
-  const name = "e" + (PZ.locked.length + 1);
-  PZ.locked.push({ v: v.slice(), name, src: i });
-  setMsg("🔒 Гироскоп принял ось " + name + " = [" +
-    v.map(x => x.toFixed(2)).join(", ") + "]", true);
-  refreshGyroButtons();
-}
-
-function setMsg(text, good) {
-  $("pz-msg").textContent = text;
-  $("pz-msg").className = "msg" + (good ? " good" : "");
-}
-
-// после каждого изменения: перерисовать, обновить числа, проверить решение
-function afterChange() {
-  drawPuzzle(); updatePuzzleInfo();
-  const PZ = G.PZ;
-  if (PZ.solved) return;
-  if (checkPuzzle()) {
-    PZ.solved = true;
-    setMsg("✅ Решено!", true);
-    setTimeout(onPuzzleSolved, 650);
-  }
-}
-
-function checkPuzzle() {
-  const PZ = G.PZ, cfg = PZ.cfg;
-  if (PZ.type === "drag") return !!cfg.check(PZ);
-  if (PZ.type === "gyro") {
-    const okAxes = PZ.locked.length >= cfg.slots;
-    if (cfg.expectDissolve) return okAxes && PZ.dissolved.length >= 1;
-    return okAxes;
-  }
-  if (PZ.type === "cell")
-    return PZ.cellPicked && M.близкиВекторы(PZ.cellPicked, cfg.target);
-  if (PZ.type === "conveyor")
-    return PZ.conveyor.ran === "ok";
-  if (PZ.type === "code")
-    return PZ.codeRan === true;
-  return false;
-}
-
-function onPuzzleSolved() {
-  if (G.mode === "endless") { endlessNext(); return; }
-  closePuzzle();
-  G.solvedThisLevel = true;
-  G.room.doorOpen = true;
-  startDialog(["ИРИС: Есть! Система палубы в норме. Дверь открыта — идём дальше!"]);
-}
-
-// ---------- живые числа ----------
-function updatePuzzleInfo() {
-  const PZ = G.PZ, cfg = PZ.cfg;
+let barSignature = "";
+function updateBar() {
+  // --- живые числа слева ---
   let html = "";
-  if (cfg.info) html = cfg.info(PZ);
-  else if (PZ.type === "gyro") {
-    html = PZ.cfg.vectors.map((s, i) => {
-      if (PZ.dissolved.includes(i)) return `${s.label}: <b>растворился</b>`;
-      const v = PZ.v[i], lockedAs = PZ.locked.find(a => a.src === i);
-      let row = `${s.label} = <b>[${f2(v[0])}, ${f2(v[1])}]</b> · длина ${f2(M.norm(v))}`;
-      if (lockedAs) row += ` 🔒 принят как <b>${lockedAs.name}</b>`;
-      else if (PZ.selected === i) row += " ← выбран";
-      return row;
-    }).join("<br>");
-    html += `<br>Осей в гироскопе: <b>${PZ.locked.length} / ${cfg.slots}</b>`;
+  const fuelStr = S.W.fuel == null ? "" :
+    ` · топливо: <b>${f2(S.fuelUsed)} / ${f2(S.W.fuel)}</b>`;
+  if (S.L.beamLevel) {
+    const v = S.beam.v, d = M.dot(v, S.W.rail.e);
+    html = `Балка: <b>[${f2(v[0])}, ${f2(v[1])}]</b> · тень v·e = ` +
+      `<b class="${S.shadowOk ? "good" : ""}">${f2(d)}</b> (нужно ${S.W.rail.need})`;
+  } else if (S.L.conveyorLevel) {
+    html = `Программа щита: применяется к лучу <b>слева направо</b>. ` +
+      (S.conv.C ? `Прошито.` : `Слоты пусты.`);
+  } else {
+    const v = S.plan.cur || (S.plan.legs.length ? S.plan.legs[S.plan.legs.length - 1] : null);
+    if (v) {
+      const n = M.norm(v);
+      html = `Тяга: <b>[${f2(v[0])}, ${f2(v[1])}]</b> · длина √(${f2(v[0])}² + ${f2(v[1])}²) = <b>${f2(n)}</b>`;
+      const total = planLen();
+      if (S.plan.legs.length) html += ` · весь план: <b>${f2(total)}</b>`;
+      if (S.W.fuel != null && S.fuelUsed + total > S.W.fuel + 1e-9)
+        html += ` <span class="warn">— не хватит топлива!</span>`;
+    } else html = "Потяни мышкой от корабля — появится вектор тяги.";
+    html += fuelStr;
   }
-  else if (PZ.type === "cell")
-    html = `Маяк: <b>[${cfg.point[0]}, ${cfg.point[1]}]</b><br>Щёлкни клетку с отражением.`;
-  else if (PZ.type === "conveyor")
-    html = `Точка r = <b>[${f2(cfg.point[0])}, ${f2(cfg.point[1])}]</b><br>` +
-           `Блоки: <b>Eᵀ</b> — в координаты зеркала, <b>TE</b> — отразить, <b>E</b> — обратно.`;
-  else if (PZ.type === "code")
-    html = "Стрелками ↑/↓ меняй порядок строк, потом запускай.";
-  $("pz-info").innerHTML = html;
-}
+  $("bar-info").innerHTML = html;
 
-// ---------- отрисовка головоломки ----------
-function parrow(from, to, color, width, dash, alpha) {
-  const a = toScr(from), b = toScr(to);
-  pctx.save();
-  pctx.globalAlpha = alpha == null ? 1 : alpha;
-  pctx.strokeStyle = pctx.fillStyle = color; pctx.lineWidth = width;
-  if (dash) pctx.setLineDash(dash);
-  pctx.beginPath(); pctx.moveTo(a.x, a.y); pctx.lineTo(b.x, b.y); pctx.stroke();
-  pctx.setLineDash([]);
-  const ang = Math.atan2(b.y - a.y, b.x - a.x), Lh = 10;
-  pctx.beginPath(); pctx.moveTo(b.x, b.y);
-  pctx.lineTo(b.x - Lh * Math.cos(ang - 0.45), b.y - Lh * Math.sin(ang - 0.45));
-  pctx.lineTo(b.x - Lh * Math.cos(ang + 0.45), b.y - Lh * Math.sin(ang + 0.45));
-  pctx.closePath(); pctx.fill();
-  pctx.restore();
-}
-function plabel(p, text, color, dx, dy) {
-  const s = toScr(p);
-  pctx.save(); pctx.font = "bold 14px system-ui"; pctx.fillStyle = color;
-  const w = pctx.measureText(text).width;
-  pctx.fillText(text, Math.max(4, Math.min(pzCv.width - w - 4, s.x + (dx || 8))),
-                Math.max(14, Math.min(pzCv.height - 5, s.y + (dy || -8))));
-  pctx.restore();
-}
-function pgrid() {
-  pctx.save();
-  pctx.strokeStyle = "#182448"; pctx.lineWidth = 1;
-  for (let i = -6; i <= 6; i++) {
-    pctx.beginPath(); pctx.moveTo(PCX + i * PS, 0); pctx.lineTo(PCX + i * PS, pzCv.height); pctx.stroke();
-    pctx.beginPath(); pctx.moveTo(0, PCY - i * PS); pctx.lineTo(pzCv.width, PCY - i * PS); pctx.stroke();
+  // --- кнопки (пересобираем только при смене набора) ---
+  const ctxTools = [];
+  if (S.L.flight) ctxTools.push("launch", "reset");
+  for (const t of S.L.tools) ctxTools.push(t);
+  if (nearCore()) {
+    if (S.basisStep === 0) ctxTools.push("gs1");
+    if (S.basisStep === 1) ctxTools.push("gs2");
+    if (S.basisStep === 2) ctxTools.push("gs3");
   }
-  pctx.strokeStyle = "#2c3d74";
-  pctx.beginPath(); pctx.moveTo(0, PCY); pctx.lineTo(pzCv.width, PCY); pctx.stroke();
-  pctx.beginPath(); pctx.moveTo(PCX, 0); pctx.lineTo(PCX, pzCv.height); pctx.stroke();
-  pctx.restore();
-}
+  if (S.L.conveyorLevel) ctxTools.push("conveyor");
+  const sig = ctxTools.join(",") + "|" + (S.flying ? 1 : 0);
+  if (sig === barSignature) return;
+  barSignature = sig;
 
-function drawPuzzle() {
-  const PZ = G.PZ; if (!PZ) return;
-  const cfg = PZ.cfg;
-  pctx.clearRect(0, 0, pzCv.width, pzCv.height);
-  pgrid();
-
-  // рельса и тень
-  if (cfg.rail) {
-    const e = cfg.rail;
-    const a = toScr([-e[0] * 6.5, -e[1] * 6.5]), b = toScr([e[0] * 6.5, e[1] * 6.5]);
-    pctx.save(); pctx.strokeStyle = "#10b98133"; pctx.lineWidth = 18; pctx.lineCap = "round";
-    pctx.beginPath(); pctx.moveTo(a.x, a.y); pctx.lineTo(b.x, b.y); pctx.stroke(); pctx.restore();
-    parrow([0, 0], e, "#10b981", 3.5);
-    plabel(e, "e", "#10b981", 8, 18);
-    const ten = M.project(PZ.v[0], e);
-    if (M.norm(ten) > 0.02 && !PZ.dissolved.includes(0)) {
-      parrow([0, 0], ten, "#ef4444", 5);
-      plabel(M.scale(0.5, ten), "тень", "#ef4444", 6, 22);
-      const s1 = toScr(PZ.v[0]), s2 = toScr(ten);
-      pctx.save(); pctx.strokeStyle = "#5b6b9b"; pctx.setLineDash([4, 4]); pctx.lineWidth = 1.4;
-      pctx.beginPath(); pctx.moveTo(s1.x, s1.y); pctx.lineTo(s2.x, s2.y); pctx.stroke(); pctx.restore();
+  const box = $("bar-tools"); box.innerHTML = "";
+  for (const t of ctxTools) {
+    if (t === "launch") {
+      const b = document.createElement("button");
+      b.className = "go"; b.textContent = "▶ Тяга!"; b.disabled = !!S.flying;
+      b.onclick = launch; box.appendChild(b);
+    } else if (t === "reset") {
+      const b = document.createElement("button");
+      b.textContent = "↺"; b.title = "Заправиться и начать сектор заново";
+      b.onclick = resetShip; box.appendChild(b);
+    } else if (t === "conveyor") {
+      buildConveyorBar(box);
+    } else {
+      const def = TOOL_DEFS[t];
+      const b = document.createElement("button");
+      b.textContent = def.label; b.onclick = () => { def.fn(); updateBar(); };
+      box.appendChild(b);
     }
   }
-
-  // маяк (уровень нормализации)
-  if (cfg.beacon) {
-    const bcn = cfg.beacon;
-    const b = toScr([bcn[0] * 6.5, bcn[1] * 6.5]);
-    pctx.save(); pctx.strokeStyle = "#10b981"; pctx.setLineDash([6, 6]); pctx.lineWidth = 2;
-    pctx.beginPath(); pctx.moveTo(PCX, PCY); pctx.lineTo(b.x, b.y); pctx.stroke(); pctx.restore();
-    plabel([bcn[0] * 4.6, bcn[1] * 4.6], "маяк", "#10b981");
-    // единичная окружность как ориентир
-    pctx.save(); pctx.strokeStyle = "#2c3d74"; pctx.setLineDash([3, 5]);
-    pctx.beginPath(); pctx.arc(PCX, PCY, PS, 0, 7); pctx.stroke(); pctx.restore();
-  }
-
-  // прибор скалярного произведения
-  if (cfg.meter && PZ.v.length >= 2) {
-    const d = M.dot(PZ.v[0], PZ.v[1]);
-    const w = 180, x0 = pzCv.width - w - 18, y0 = 18;
-    pctx.save();
-    pctx.fillStyle = "#101a3a"; pctx.strokeStyle = "#2c3d74";
-    roundRect(pctx, x0, y0, w, 46, 9); pctx.fill(); pctx.stroke();
-    pctx.fillStyle = Math.abs(d) < 1e-9 ? "#4ade80" : (d > 0 ? "#fbbf24" : "#f87171");
-    pctx.font = "bold 19px ui-monospace, monospace"; pctx.textAlign = "center";
-    pctx.fillText("a · b = " + f2(d), x0 + w / 2, y0 + 24);
-    pctx.font = "11px system-ui"; pctx.fillStyle = "#8fa1d0";
-    pctx.fillText(Math.abs(d) < 1e-9 ? "⊥ ПЕРПЕНДИКУЛЯРНО!" : "нужен ноль", x0 + w / 2, y0 + 39);
-    pctx.restore();
-  }
-
-  // тип cell: зеркало вдоль X, маяк, кликнутая клетка
-  if (PZ.type === "cell") {
-    pctx.save(); pctx.strokeStyle = "#a3e63544"; pctx.lineWidth = 16; pctx.lineCap = "round";
-    pctx.beginPath(); pctx.moveTo(10, PCY); pctx.lineTo(pzCv.width - 10, PCY); pctx.stroke();
-    pctx.restore();
-    plabel([4.3, 0], "зеркало", "#a3e635", 0, -12);
-    const p = toScr(cfg.point);
-    pctx.fillStyle = "#38bdf8";
-    pctx.beginPath(); pctx.arc(p.x, p.y, 8, 0, 7); pctx.fill();
-    plabel(cfg.point, "маяк [" + cfg.point + "]", "#38bdf8");
-    if (PZ.cellPicked) {
-      const c = toScr(PZ.cellPicked);
-      const ok = M.близкиВекторы(PZ.cellPicked, cfg.target);
-      pctx.strokeStyle = ok ? "#4ade80" : "#f87171"; pctx.lineWidth = 3;
-      pctx.strokeRect(c.x - PS / 2, c.y - PS / 2, PS, PS);
-      if (ok) {
-        pctx.fillStyle = "#ec4899";
-        pctx.beginPath(); pctx.arc(c.x, c.y, 8, 0, 7); pctx.fill();
-        const s1 = toScr(cfg.point);
-        pctx.save(); pctx.strokeStyle = "#5b6b9b"; pctx.setLineDash([5, 5]);
-        pctx.beginPath(); pctx.moveTo(s1.x, s1.y); pctx.lineTo(c.x, c.y); pctx.stroke(); pctx.restore();
-      }
-    }
-  }
-
-  // тип conveyor: зеркало, точка и этапы прогона
-  if (PZ.type === "conveyor") drawConveyorScene();
-
-  // сами векторы
-  if (cfg.vectors) {
-    cfg.vectors.forEach((spec, i) => {
-      if (PZ.dissolved.includes(i)) return;
-      const v = PZ.v[i];
-      const isSel = PZ.selected === i && (PZ.type === "gyro" || cfg.vectors.filter(s => s.draggable).length > 1);
-      const lockedAs = PZ.locked.find(a => a.src === i);
-      parrow([0, 0], v, lockedAs ? "#4ade80" : spec.color, isSel ? 5.5 : 4);
-      plabel(v, lockedAs ? lockedAs.name : spec.label, lockedAs ? "#4ade80" : spec.color);
-      // ручка
-      const s = toScr(v);
-      pctx.save();
-      pctx.fillStyle = "#0d1430"; pctx.strokeStyle = lockedAs ? "#4ade80" : spec.color;
-      pctx.lineWidth = isSel ? 3.5 : 2.5;
-      pctx.beginPath(); pctx.arc(s.x, s.y, 7.5, 0, 7); pctx.fill(); pctx.stroke();
-      pctx.restore();
-    });
-  }
 }
 
-// ---------- перетаскивание в головоломке ----------
-let pzDrag = null;
-function pzPos(e) {
-  const r = pzCv.getBoundingClientRect();
-  return { x: (e.clientX - r.left) * pzCv.width / r.width,
-           y: (e.clientY - r.top) * pzCv.height / r.height };
+function planLen() {
+  let s = 0;
+  for (const l of S.plan.legs) s += M.norm(l);
+  if (S.plan.cur) s += M.norm(S.plan.cur);
+  return s;
 }
-pzCv.addEventListener("pointerdown", e => {
-  const PZ = G.PZ; if (!PZ) return;
-  const p = pzPos(e);
 
-  if (PZ.type === "cell") {
-    const w = toWorld(p.x, p.y);
-    PZ.cellPicked = [Math.round(w[0]), Math.round(w[1])];
-    if (!checkPuzzle()) setMsg("Не здесь. Помни: расстояние до зеркала сохраняется!");
-    afterChange();
+// ---------------- полёт ----------------
+function launch() {
+  if (S.flying) return;
+  const legs = S.plan.legs.slice();
+  if (S.plan.cur && M.norm(S.plan.cur) > 0.01) legs.push(S.plan.cur);
+  if (!legs.length) { msg("Сначала наведи вектор тяги: потяни мышкой от корабля."); return; }
+  const total = legs.reduce((s, l) => s + M.norm(l), 0);
+  if (S.W.fuel != null && S.fuelUsed + total > S.W.fuel + 1e-9) {
+    msg(`Не хватит топлива: план стоит ${f2(total)}, осталось ${f2(S.W.fuel - S.fuelUsed)}. Короче вектор!`);
     return;
   }
+  S.flying = { legs, i: 0, left: M.norm(legs[0]) };
+  S.plan = { legs: [], cur: null };
+  updateBar();
+}
 
-  if (!PZ.cfg.vectors) return;
-  // ищем ближайшую ручку
-  let best = -1, bestD = 24;
-  PZ.cfg.vectors.forEach((spec, i) => {
-    if (PZ.dissolved.includes(i)) return;
-    const s = toScr(PZ.v[i]);
-    const d = Math.hypot(p.x - s.x, p.y - s.y);
-    if (d < bestD) { best = i; bestD = d; }
-  });
-  if (best >= 0) {
-    PZ.selected = best;
-    const spec = PZ.cfg.vectors[best];
-    if (spec.draggable !== false && PZ.type !== "gyro" && !isLockedIdx(best)) pzDrag = best;
-    if (PZ.type === "gyro" && !isLockedIdx(best)) {
-      pzDrag = null;                       // в гироскопе векторы не таскают
-      setMsg("Выбран " + spec.label + ". Применяй операции кнопками.");
+function resetShip() {
+  S.ship.pos = S.W.ship.slice();
+  S.fuelUsed = 0; S.plan = { legs: [], cur: null };
+  S.flying = null; S.trail = [];
+  msg("Заправлен и возвращён на старт.", true);
+  updateBar();
+}
+
+function stepFlight(dt) {
+  const F = S.flying;
+  if (!F) return;
+  let budget = G.instant ? 1e9 : 6 * dt;                // скорость 6 ед/с
+  while (budget > 0 && S.flying) {
+    const leg = F.legs[F.i], legLen = M.norm(leg);
+    const u = M.normalize(leg);
+    const step = Math.min(0.045, F.left, budget);
+    const next = M.add(S.ship.pos, M.scale(step, u));
+    // столкновение с астероидом
+    let crash = false;
+    for (const a of (S.W.asteroids || [])) {
+      if (M.norm(M.sub(next, a.pos)) < a.r + 0.2) { crash = true; break; }
     }
-    afterChange();
-    e.preventDefault();
+    if (crash) {
+      S.flying = null;
+      msg("💥 Столкновение! Двигатели погашены. Построй маршрут в обход.", false);
+      break;
+    }
+    // силовое поле: внутри можно лететь только перпендикулярно e
+    const fld = S.W.field;
+    if (fld && next[1] > fld.y0 && next[1] < fld.y1 &&
+        Math.abs(M.dot(u, M.normalize(fld.e))) > 0.05) {
+      S.flying = null;
+      msg("⚡ Поле оттолкнуло: внутри канала лететь можно только ПЕРПЕНДИКУЛЯРНО полю!", false);
+      break;
+    }
+    S.ship.pos = next;
+    S.ship.ang = Math.atan2(u[1], u[0]);
+    S.fuelUsed += step;
+    F.left -= step; budget -= step;
+    if (!G.instant) S.trail.push({ p: next.slice(), a: 1 });
+    if (F.left <= 1e-9) {
+      F.i++;
+      if (F.i >= F.legs.length) {         // полёт завершён
+        const last = F.legs[F.legs.length - 1];
+        S.lastLegLen = M.norm(last);
+        S.lastLegDir = M.normalize(last);
+        S.flying = null;
+        landCheck();
+      } else F.left = M.norm(F.legs[F.i]);
+    }
   }
-});
-pzCv.addEventListener("pointermove", e => {
-  const PZ = G.PZ;
-  if (!PZ || pzDrag == null || PZ.solved) return;
-  const p = pzPos(e), w = toWorld(p.x, p.y);
-  const snap = PZ.cfg.vectors[pzDrag].snap;
-  let v = w;
-  if (snap) v = [Math.round(w[0] / snap) * snap, Math.round(w[1] / snap) * snap];
-  if (Math.abs(v[0]) < 1e-9 && Math.abs(v[1]) < 1e-9) return;
-  PZ.v[pzDrag] = v;
-  afterChange();
-  e.preventDefault();
-});
-window.addEventListener("pointerup", () => pzDrag = null);
-
-// ---------- конвейер (уровень 9) ----------
-function buildConveyorUI(box) {
-  const PZ = G.PZ;
-  const wrap = document.createElement("div");
-  wrap.innerHTML = `<div class="slotrow" id="cv-slots">
-      <div class="slot" data-i="0">шаг 1</div><span>→</span>
-      <div class="slot" data-i="1">шаг 2</div><span>→</span>
-      <div class="slot" data-i="2">шаг 3</div>
-    </div>
-    <div class="chips" id="cv-tray"></div>`;
-  box.appendChild(wrap);
-  const run = document.createElement("button");
-  run.textContent = "▶ Запустить точку через конвейер";
-  run.onclick = runConveyor;
-  box.appendChild(run);
-
-  const CHIPS = [
-    { id: "ET", label: "Eᵀ (в мир зеркала)" },
-    { id: "TE", label: "TE (отразить)" },
-    { id: "E",  label: "E (обратно)" },
-  ];
-  const tray = wrap.querySelector("#cv-tray");
-  for (const c of CHIPS) {
-    const el = document.createElement("div");
-    el.className = "chip"; el.textContent = c.label; el.dataset.id = c.id;
-    el.onclick = () => {                      // чип → первый пустой слот
-      const slotI = PZ.conveyor.slots.indexOf(null);
-      if (slotI < 0 || el.parentElement.classList.contains("slot")) return;
-      PZ.conveyor.slots[slotI] = c.id;
-      wrap.querySelector(`.slot[data-i="${slotI}"]`).replaceChildren(el);
-      PZ.conveyor.ran = null; drawPuzzle();
-    };
-    tray.appendChild(el);
-  }
-  for (const slot of wrap.querySelectorAll(".slot")) {
-    slot.onclick = e => {                     // клик по занятому слоту → чип назад
-      const chip = slot.querySelector(".chip");
-      if (!chip || e.target === chip) {}      // клики по чипу в слоте тоже возвращают
-      if (!chip) return;
-      PZ.conveyor.slots[+slot.dataset.i] = null;
-      slot.textContent = "шаг " + (+slot.dataset.i + 1);
-      tray.appendChild(chip);
-      PZ.conveyor.ran = null; drawPuzzle();
-    };
-  }
+  updateBar();
 }
 
-function conveyorMatrices() {
-  const cfg = G.PZ.cfg;
-  const e1 = M.normalize(cfg.mirrorDir), e2 = [-e1[1], e1[0]];
-  const E = M.matFromCols(e1, e2);
-  return { E, ET: M.matT(E), TE: [[1, 0], [0, -1]], e1 };
-}
-
-function runConveyor() {
-  const PZ = G.PZ, cfg = PZ.cfg;
-  if (PZ.conveyor.slots.includes(null)) { setMsg("Заполни все три слота!"); return; }
-  const mats = conveyorMatrices();
-  let p = cfg.point.slice();
-  const stages = [p.slice()];
-  for (const id of PZ.conveyor.slots) { p = M.matVec(mats[id], p); stages.push(p.slice()); }
-  PZ.conveyor.stages = stages;
-
-  const правильное = M.matVec(M.reflectionMatrix(cfg.mirrorDir), cfg.point);
-  if (M.близкиВекторы(p, правильное, 1e-6)) {
-    PZ.conveyor.ran = "ok";
-    setMsg("✅ Точка отразилась правильно: Eᵀ перевёл, TE отразил, E вернул!", true);
-  } else {
-    PZ.conveyor.ran = "bad";
-    setMsg("Точка улетела не туда (должна быть зеркально по другую сторону). Поменяй порядок блоков.");
+function landCheck() {
+  const d = S.W.dock;
+  if (!d || S.docked) return;
+  if (M.norm(M.sub(S.ship.pos, d.pos)) > d.r) return;
+  if (d.needPower && !S.powered) { msg("Док обесточен: сначала направь луч в приёмник."); return; }
+  if (d.needBasis && S.basisStep < 3) { msg("Док не принимает корабль: базис сектора не откалиброван!"); return; }
+  if (d.arriveLen != null && Math.abs(S.lastLegLen - d.arriveLen) > 0.06) {
+    msg(`Док отверг стыковку: импульс ${f2(S.lastLegLen)}, а нужен ровно ${f2(d.arriveLen)}. Нормализуй последний вектор!`);
+    // мягкий отскок, чтобы можно было зайти заново
+    S.ship.pos = M.sub(S.ship.pos, M.scale(1.2, S.lastLegDir || [1, 0]));
+    return;
   }
-  afterChange();
+  S.docked = true;
+  msg("🛰 Стыковка успешна!", true);
 }
 
-function drawConveyorScene() {
-  const PZ = G.PZ, cfg = PZ.cfg;
-  const e1 = M.normalize(cfg.mirrorDir);
-  // зеркало
-  const a = toScr(M.scale(-6.5, e1)), b = toScr(M.scale(6.5, e1));
-  pctx.save(); pctx.strokeStyle = "#a3e63544"; pctx.lineWidth = 15; pctx.lineCap = "round";
-  pctx.beginPath(); pctx.moveTo(a.x, a.y); pctx.lineTo(b.x, b.y); pctx.stroke(); pctx.restore();
-  plabel(M.scale(4.4, e1), "зеркало", "#a3e635");
-  // исходная точка
-  const p0 = toScr(cfg.point);
-  pctx.fillStyle = "#38bdf8"; pctx.beginPath(); pctx.arc(p0.x, p0.y, 8, 0, 7); pctx.fill();
-  plabel(cfg.point, "r", "#38bdf8");
-  // правильный ответ - едва заметная цель
-  const target = M.matVec(M.reflectionMatrix(cfg.mirrorDir), cfg.point);
-  const pt = toScr(target);
-  pctx.save(); pctx.strokeStyle = "#ec489966"; pctx.setLineDash([4, 4]); pctx.lineWidth = 2;
-  pctx.beginPath(); pctx.arc(pt.x, pt.y, 11, 0, 7); pctx.stroke(); pctx.restore();
-  plabel(target, "цель", "#ec4899", 12, 4);
-  // этапы прогона
-  if (PZ.conveyor && PZ.conveyor.stages) {
-    const cols = ["#38bdf8", "#fbbf24", "#f472b6", "#4ade80"];
-    PZ.conveyor.stages.forEach((s, i) => {
-      const q = toScr(s);
-      pctx.fillStyle = cols[i];
-      pctx.beginPath(); pctx.arc(q.x, q.y, 6, 0, 7); pctx.fill();
-      if (i > 0) {
-        const prev = toScr(PZ.conveyor.stages[i - 1]);
-        pctx.save(); pctx.strokeStyle = cols[i] + "88"; pctx.lineWidth = 1.6;
-        pctx.beginPath(); pctx.moveTo(prev.x, prev.y); pctx.lineTo(q.x, q.y); pctx.stroke();
-        pctx.restore();
-        plabel(s, "шаг " + i, cols[i], 9, 4);
-      }
+// ---------------- базис (Грам-Шмидт у ядра) ----------------
+function basisOp(step) {
+  if (S.basisStep !== step - 1) return;
+  const b1 = [S.B[0][0], S.B[1][0]], b2 = [S.B[0][1], S.B[1][1]];
+  let n1 = b1, n2 = b2;
+  if (step === 1) { n1 = M.normalize(b1); msg("b1 / |b1| — первая ось теперь единичная. Смотри на мир!", true); }
+  if (step === 2) { n2 = M.subtractShadow(b2, b1); msg("Из b2 вычтена тень на e1 — перекос уходит!", true); }
+  if (step === 3) { n2 = M.normalize(b2); msg("b2 / |b2| — базис ортонормирован. Сектор выпрямлен!", true); }
+  S.Bfrom = S.B.map(r => r.slice());
+  S.Btarget = M.matFromCols(n1, n2);
+  S.Banim = 0;
+  S.basisStep = step;
+  updateBar();
+}
+
+function stepBasisAnim(dt) {
+  if (S.Banim >= 1 || !S.Btarget) return;
+  S.Banim = Math.min(1, S.Banim + (G.instant ? 1 : dt / 0.9));
+  const k = S.Banim * S.Banim * (3 - 2 * S.Banim);       // плавность
+  S.B = [0, 1].map(i => [0, 1].map(j =>
+    S.Bfrom[i][j] + (S.Btarget[i][j] - S.Bfrom[i][j]) * k));
+  S.Binv = M.matInv(S.B);
+}
+
+// ---------------- лазер ----------------
+function u2(ang) { return [Math.cos(ang), Math.sin(ang)]; }
+function cross2(a, b) { return a[0] * b[1] - a[1] * b[0]; }
+
+function raySeg(p, d, a, b) {
+  const r = M.sub(b, a), den = cross2(d, r);
+  if (Math.abs(den) < 1e-12) return null;
+  const ap = M.sub(a, p);
+  const t = cross2(ap, r) / den, s = cross2(ap, d) / den;
+  return (t > 1e-6 && s >= 0 && s <= 1) ? t : null;
+}
+function rayCircle(p, d, c, r) {
+  const f = M.sub(p, c);
+  const b = M.dot(f, d), cc = M.dot(f, f) - r * r;
+  const disc = b * b - cc;
+  if (disc < 0) return null;
+  const t = -b - Math.sqrt(disc);
+  return t > 1e-6 ? t : null;
+}
+
+function traceLaser() {
+  const W = S.W;
+  if (!W.laser) { S.laserSegs = []; return; }
+  let pos = W.laser.pos.slice();
+  let dir = W.laser.dir ? M.normalize(W.laser.dir)
+                        : M.normalize(M.sub(W.laser.dirTo, pos));
+  const segs = [];
+  let powered = false;
+  for (let bounce = 0; bounce < 6; bounce++) {
+    let best = { t: Infinity, kind: null, obj: null };
+    S.mirrors.forEach(m => {
+      const h = M.scale(m.len / 2, u2(m.ang));
+      const t = raySeg(pos, dir, M.sub(m.c, h), M.add(m.c, h));
+      if (t != null && t < best.t) best = { t, kind: "mirror", obj: m };
     });
-  }
-}
-
-// ---------- кодовая комната (уровень 10) ----------
-function buildCodeUI(box) {
-  const PZ = G.PZ;
-  const list = document.createElement("div"); list.id = "code-list";
-  box.appendChild(list);
-  const run = document.createElement("button");
-  run.textContent = "▶ Запустить код";
-  run.onclick = runCode;
-  box.appendChild(run);
-  renderCodeLines();
-}
-function renderCodeLines() {
-  const PZ = G.PZ, list = $("code-list");
-  list.innerHTML = "";
-  PZ.codeOrder.forEach((lineIdx, pos) => {
-    const row = document.createElement("div"); row.className = "codeline";
-    const up = document.createElement("button"); up.textContent = "↑";
-    const dn = document.createElement("button"); dn.textContent = "↓";
-    up.disabled = pos === 0; dn.disabled = pos === PZ.codeOrder.length - 1;
-    up.onclick = () => { swap(pos, pos - 1); };
-    dn.onclick = () => { swap(pos, pos + 1); };
-    const txt = document.createElement("div"); txt.className = "txt";
-    txt.textContent = PZ.cfg.lines[lineIdx].text;
-    row.append(up, dn, txt); list.appendChild(row);
-  });
-  function swap(a, b) {
-    const o = PZ.codeOrder;
-    [o[a], o[b]] = [o[b], o[a]];
-    PZ.codeRan = false;
-    renderCodeLines();
-  }
-}
-function runCode() {
-  const PZ = G.PZ, lines = PZ.cfg.lines;
-  const done = new Set();
-  for (const idx of PZ.codeOrder) {
-    const line = lines[idx];
-    for (const need of line.needs) {
-      if (!done.has(need)) {
-        const needText = lines.find(l => l.id === need).text.split("=")[0].trim();
-        setMsg(`⛔ Ошибка: строка «${line.text}» использует «${needText}», ` +
-               `но он ещё не создан. Переставь строки!`);
-        return;
-      }
+    if (W.shield && S.conv.C) {
+      const h = M.scale(W.shield.len / 2, M.normalize(W.shield.dir));
+      const t = raySeg(pos, dir, M.sub(W.shield.c, h), M.add(W.shield.c, h));
+      if (t != null && t < best.t) best = { t, kind: "shield" };
     }
-    done.add(line.id);
+    for (const rc of (W.receivers || [])) {
+      const t = rayCircle(pos, dir, rc.pos, rc.r);
+      if (t != null && t < best.t) best = { t, kind: "receiver" };
+    }
+    if (S.station) {
+      const t = rayCircle(pos, dir, S.station.pos, S.station.r);
+      if (t != null && t < best.t) best = { t, kind: "receiver" };
+    }
+    for (const a of (W.asteroids || [])) {
+      const t = rayCircle(pos, dir, a.pos, a.r);
+      if (t != null && t < best.t) best = { t, kind: "rock" };
+    }
+    if (best.t === Infinity) { segs.push([pos, M.add(pos, M.scale(16, dir))]); break; }
+    const end = M.add(pos, M.scale(best.t, dir));
+    segs.push([pos, end]);
+    if (best.kind === "mirror") {
+      dir = M.normalize(M.matVec(M.reflectionMatrix(u2(best.obj.ang)), dir));
+      pos = M.add(end, M.scale(0.01, dir));
+    } else if (best.kind === "shield") {
+      dir = M.normalize(M.matVec(S.conv.C, dir));
+      pos = M.add(end, M.scale(0.01, dir));
+    } else { if (best.kind === "receiver") powered = true; break; }
   }
-  PZ.codeRan = true;
-  setMsg("✅ Код выполнен! Ядро принимает матрицу T = E·TE·Eᵀ...", true);
-  afterChange();
+  S.laserSegs = segs;
+  if (powered && !S.powered) msg("⚡ Приёмник запитан!", true);
+  S.powered = powered;
 }
 
-// ---------- подсказки ----------
-$("pz-hint").addEventListener("click", () => {
-  if (G.mode === "endless") return;
-  const PZ = G.PZ, hints = LEVELS[G.level].hints;
-  if (!hints.length) return;
-  if (PZ.hintLevel < hints.length) {
-    G.hintsUsed++;
-    const div = document.createElement("div");
-    div.className = "h";
-    div.textContent = "💡 " + hints[PZ.hintLevel];
-    $("pz-hint-text").appendChild(div);
-    PZ.hintLevel++;
+// ---------------- конвейер щита (финал) ----------------
+const CHIP_MATS = () => {
+  const e1 = M.normalize(S.W.shield.dir), e2 = [-e1[1], e1[0]];
+  const E = M.matFromCols(e1, e2);
+  return { ET: M.matT(E), TE: [[1, 0], [0, -1]], E };
+};
+function buildConveyorBar(box) {
+  const wrap = document.createElement("div");
+  wrap.className = "chips";
+  wrap.innerHTML =
+    `<div class="slot" data-i="0">шаг 1</div><span>→</span>` +
+    `<div class="slot" data-i="1">шаг 2</div><span>→</span>` +
+    `<div class="slot" data-i="2">шаг 3</div>`;
+  const chips = [["ET", "Eᵀ · в мир щита"], ["TE", "TE · отразить"], ["E", "E · обратно"]];
+  for (const [id, label] of chips) {
+    const el = document.createElement("div");
+    el.className = "chip"; el.textContent = label; el.dataset.id = id;
+    el.onclick = () => {
+      if (el.parentElement.classList.contains("slot")) {        // вернуть в лоток
+        S.conv.slots[+el.parentElement.dataset.i] = null;
+        el.parentElement.textContent = "шаг " + (+el.parentElement.dataset.i + 1);
+        wrap.appendChild(el);
+      } else {
+        const i = S.conv.slots.indexOf(null);
+        if (i < 0) return;
+        S.conv.slots[i] = id;
+        const slot = wrap.querySelector(`.slot[data-i="${i}"]`);
+        slot.textContent = ""; slot.appendChild(el);
+      }
+      S.conv.C = null; S.powered = false;
+    };
+    wrap.appendChild(el);
   }
-  if (PZ.hintLevel >= hints.length) $("pz-hint").style.display = "none";
+  const run = document.createElement("button");
+  run.textContent = "⚡ Прошить щит";
+  run.onclick = convRun;
+  box.appendChild(wrap); box.appendChild(run);
+}
+function convRun() {
+  if (S.conv.slots.includes(null)) { msg("Заполни все три слота программы!"); return; }
+  const mats = CHIP_MATS();
+  let C = [[1, 0], [0, 1]];
+  for (const id of S.conv.slots) C = M.matMul(mats[id], C);   // слева направо
+  S.conv.C = C; S.conv.ranOnce = true;
+  const T = M.reflectionMatrix(S.W.shield.dir);
+  const ok = [0, 1].every(i => [0, 1].every(j => Math.abs(C[i][j] - T[i][j]) < 1e-9));
+  msg(ok ? "✅ Программа верна: Eᵀ перевёл, TE отразил, E вернул!"
+         : "Щит прошит… но смотри, куда ушёл луч. Порядок блоков неверный.", ok);
+}
+
+// ============================================================
+// ВВОД: прицеливание, зеркала, балка
+// ============================================================
+let drag = null;   // {kind:'aim'|'mirror'|'beam', i}
+function evPos(e) {
+  const r = cv.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * cv.width / r.width,
+           y: (e.clientY - r.top) * cv.height / r.height };
+}
+function snap05(v) { return [Math.round(v[0] * 2) / 2, Math.round(v[1] * 2) / 2]; }
+
+cv.addEventListener("pointerdown", e => {
+  if (!S || S.complete) return;
+  const p = evPos(e);
+  // 1) ручки зеркал
+  for (let i = 0; i < S.mirrors.length; i++) {
+    const m = S.mirrors[i];
+    const h = toScr(M.add(m.c, M.scale(m.len / 2 + 0.3, u2(m.ang))));
+    if (Math.hypot(p.x - h.x, p.y - h.y) < 22) { drag = { kind: "mirror", i }; return; }
+  }
+  // 2) кончик балки
+  if (S.beam) {
+    const tip = toScr(M.add(S.W.beam.base, S.beam.v));
+    if (Math.hypot(p.x - tip.x, p.y - tip.y) < 26) { drag = { kind: "beam" }; return; }
+    drag = { kind: "beam" }; moveDrag(p); return;   // балку можно наводить откуда угодно
+  }
+  // 3) прицеливание тягой
+  if (S.L.flight && !S.flying) { drag = { kind: "aim" }; moveDrag(p); }
+});
+cv.addEventListener("pointermove", e => { if (drag) { moveDrag(evPos(e)); e.preventDefault(); } });
+window.addEventListener("pointerup", () => drag = null);
+
+function moveDrag(p) {
+  const w = fromScr(p.x, p.y);
+  if (drag.kind === "mirror") {
+    const m = S.mirrors[drag.i];
+    m.ang = Math.atan2(w[1] - m.c[1], w[0] - m.c[0]);
+  } else if (drag.kind === "beam") {
+    const v = snap05(M.sub(w, S.W.beam.base));
+    if (M.norm(v) > 0.2) S.beam.v = v;
+  } else if (drag.kind === "aim") {
+    const v = snap05(M.sub(w, chainTail()));
+    S.plan.cur = M.norm(v) > 0.01 ? v : null;
+  }
+  updateBar();
+}
+
+window.addEventListener("keydown", e => {
+  if (G.screen !== "game" || !S) return;
+  if (e.key === "Enter" && S.L.flight) { launch(); e.preventDefault(); }
 });
 
 // ============================================================
-// ЦЕРЕМОНИЯ: звёзды + вопрос + журнал
+// ОБНОВЛЕНИЕ И ПРОВЕРКА ЦЕЛЕЙ
 // ============================================================
-function finishLevel() {
-  if ($("ceremony").classList.contains("hidden") === false) return;
-  const L = LEVELS[G.level];
-  const stars = { solve: true, nohint: G.hintsUsed === 0, question: false };
+function update(dt) {
+  S.t += dt;
+  if (S.msgT > 0) S.msgT -= dt;
+  stepBasisAnim(dt);
+  stepFlight(dt);
+  traceLaser();
 
-  $("cer-title").textContent = L.deck + " починена!";
-  renderStars(stars);
+  // мост-тень
+  if (S.beam) {
+    const d = M.dot(S.beam.v, S.W.rail.e);
+    S.shadowOk = Math.abs(d - S.W.rail.need) <= 0.06;
+    if (S.droneT != null) {
+      S.droneT += (G.instant ? 10 : dt * 0.9);
+      if (S.droneT >= 1) { S.droneT = null; S.droneDone = true; msg("📦 Дрон доставлен!", true); }
+    }
+  }
 
-  // журнал
+  // затухание следа
+  for (const t of S.trail) t.a -= dt * 0.5;
+  while (S.trail.length && S.trail[0].a <= 0) S.trail.shift();
+
+  // цели
+  let all = true;
+  for (const o of S.L.objectives) {
+    if (!S.objDone[o.id] && o.check(S)) S.objDone[o.id] = true;
+    if (!S.objDone[o.id]) all = false;
+  }
+  if (all && S.L.objectives.length && !S.complete) {
+    S.complete = true;
+    setTimeout(() => G.mode === "endless" ? endlessNext() : ceremony(), G.instant ? 30 : 900);
+  }
+
+  // HUD топлива
+  const hf = $("hud-fuel");
+  if (S.W.fuel == null) hf.textContent = "⛽ ∞";
+  else {
+    hf.textContent = `⛽ ${f2(Math.max(0, S.W.fuel - S.fuelUsed))} / ${f2(S.W.fuel)}`;
+    hf.className = (S.W.fuel - S.fuelUsed) < 1 ? "low" : "";
+  }
+}
+
+// ============================================================
+// ОТРИСОВКА
+// ============================================================
+function arrow(from, to, color, width, dash, alpha) {
+  const a = toScr(from), b = toScr(to);
+  ctx.save();
+  ctx.globalAlpha = alpha == null ? 1 : alpha;
+  ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = width;
+  ctx.shadowColor = color; ctx.shadowBlur = 6;
+  if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  ctx.setLineDash([]);
+  const ang = Math.atan2(b.y - a.y, b.x - a.x), L = 10;
+  ctx.beginPath(); ctx.moveTo(b.x, b.y);
+  ctx.lineTo(b.x - L * Math.cos(ang - 0.45), b.y - L * Math.sin(ang - 0.45));
+  ctx.lineTo(b.x - L * Math.cos(ang + 0.45), b.y - L * Math.sin(ang + 0.45));
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function label(p, text, color, dx, dy) {
+  const s = toScr(p);
+  ctx.save(); ctx.font = "bold 14px system-ui"; ctx.fillStyle = color;
+  ctx.shadowColor = "#000"; ctx.shadowBlur = 4;
+  const w = ctx.measureText(text).width;
+  ctx.fillText(text, Math.max(4, Math.min(cv.width - w - 4, s.x + (dx || 9))),
+               Math.max(14, Math.min(cv.height - 6, s.y + (dy || -9))));
+  ctx.restore();
+}
+function circle(p, r, fill, stroke, lw) {
+  const s = toScr(p);
+  ctx.save();
+  ctx.beginPath(); ctx.arc(s.x, s.y, r * SC, 0, 7);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 2; ctx.stroke(); }
+  ctx.restore();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  const W = S.W;
+
+  // звёзды (не искажаются - это далёкий фон)
+  ctx.save();
+  for (const st of S.stars) {
+    ctx.globalAlpha = st.a; ctx.fillStyle = "#9fb0dd";
+    ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+
+  // сетка (через матрицу базиса => кривой базис виден сразу)
+  ctx.save(); ctx.strokeStyle = "#16224a"; ctx.lineWidth = 1;
+  for (let x = -6; x <= 6; x++) {
+    const a = toScr([x, -4]), b = toScr([x, 4]);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  }
+  for (let y = -4; y <= 4; y++) {
+    const a = toScr([-6, y]), b = toScr([6, y]);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  }
+  ctx.restore();
+
+  // силовое поле
+  if (W.field) {
+    const c1 = toScr([-6, W.field.y0]), c2 = toScr([6, W.field.y0]),
+          c3 = toScr([6, W.field.y1]), c4 = toScr([-6, W.field.y1]);
+    ctx.save();
+    ctx.fillStyle = "#f59e0b18";
+    ctx.beginPath(); ctx.moveTo(c1.x, c1.y); ctx.lineTo(c2.x, c2.y);
+    ctx.lineTo(c3.x, c3.y); ctx.lineTo(c4.x, c4.y); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#f59e0b55"; ctx.setLineDash([8, 6]);
+    ctx.beginPath(); ctx.moveTo(c1.x, c1.y); ctx.lineTo(c2.x, c2.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(c4.x, c4.y); ctx.lineTo(c3.x, c3.y); ctx.stroke();
+    ctx.restore();
+    const my = (W.field.y0 + W.field.y1) / 2;
+    for (let x = -5; x <= 5; x += 1.6)
+      arrow([x, my], [x + 0.7, my], "#f59e0b", 2, null, 0.7);
+    label([-5.6, my], "поле e = [1, 0]", "#f59e0b", 0, -14);
+  }
+
+  // рельса, разлом, мост, дрон
+  if (W.rail) {
+    const R = W.rail, e = R.e;
+    const a = toScr(M.add(R.p0, M.scale(-2.2, e))), b = toScr(M.add(R.p0, M.scale(6.4, e)));
+    ctx.save(); ctx.strokeStyle = "#334977"; ctx.lineWidth = 5; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.restore();
+    // разлом: участок, который должен накрыть мост
+    const g1 = toScr(R.p0), g2 = toScr(M.add(R.p0, M.scale(R.need, e)));
+    ctx.save(); ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 3; ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.moveTo(g1.x, g1.y); ctx.lineTo(g2.x, g2.y); ctx.stroke(); ctx.restore();
+    label(M.add(R.p0, M.scale(R.need / 2, e)), `разлом: ${R.need}`, "#ef4444", -20, 26);
+    // мост = тень балки
+    const d = M.dot(S.beam.v, e);
+    if (d > 0.03) {
+      const m2 = toScr(M.add(R.p0, M.scale(Math.min(d, 6.4), e)));
+      ctx.save(); ctx.strokeStyle = S.shadowOk ? "#4ade80" : "#fbbf24";
+      ctx.lineWidth = 9; ctx.lineCap = "round";
+      ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.moveTo(g1.x, g1.y); ctx.lineTo(m2.x, m2.y); ctx.stroke(); ctx.restore();
+      // "луч света" от балки к концу моста
+      const tip = toScr(M.add(W.beam.base, S.beam.v));
+      ctx.save(); ctx.strokeStyle = "#8fa1d0"; ctx.setLineDash([4, 5]); ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(m2.x, m2.y); ctx.stroke(); ctx.restore();
+    }
+    // дрон
+    if (S.droneT != null || S.droneDone) {
+      const t = S.droneDone ? 1 : S.droneT;
+      circle(M.add(R.p0, M.scale(t * R.need, e)), 0.16, "#fb923c", "#fed7aa", 2);
+    } else {
+      circle(M.add(R.p0, M.scale(-0.5, e)), 0.16, "#fb923c88", "#fb923c", 2);
+    }
+  }
+
+  // балка-прожектор
+  if (S.beam) {
+    arrow(W.beam.base, M.add(W.beam.base, S.beam.v), "#38bdf8", 4.5);
+    label(M.add(W.beam.base, S.beam.v), "балка v", "#38bdf8");
+    const tip = toScr(M.add(W.beam.base, S.beam.v));
+    ctx.save(); ctx.fillStyle = "#0d1430"; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.6;
+    ctx.beginPath(); ctx.arc(tip.x, tip.y, 8, 0, 7); ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+
+  // астероиды
+  for (const a of (W.asteroids || [])) {
+    circle(a.pos, a.r, "#2b3350", "#465379", 2.5);
+    circle(M.add(a.pos, [a.r * 0.3, a.r * 0.25]), a.r * 0.22, "#222a44");
+    circle(M.add(a.pos, [-a.r * 0.3, -a.r * 0.2]), a.r * 0.15, "#222a44");
+  }
+
+  // ядро сектора и его базис
+  if (W.core) {
+    const c = toScr(W.core.pos);
+    ctx.save();
+    ctx.strokeStyle = S.basisStep >= 3 ? "#4ade80" : "#e879f9";
+    ctx.fillStyle = "#1a1030"; ctx.lineWidth = 2.5;
+    ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 14;
+    ctx.beginPath();
+    for (let k = 0; k < 6; k++) {
+      const a = Math.PI / 3 * k + S.t * 0.25;
+      const px = c.x + 24 * Math.cos(a), py = c.y + 24 * Math.sin(a);
+      k ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.restore();
+    // оси базиса: рисуем МИРОВЫЕ [1,0] и [0,1] - трансформация покажет b1, b2
+    const fixed = S.basisStep >= 3;
+    arrow(W.core.pos, M.add(W.core.pos, [1, 0]), fixed ? "#4ade80" : "#e879f9", 4);
+    arrow(W.core.pos, M.add(W.core.pos, [0, 1]), fixed ? "#4ade80" : "#f472b6", 4);
+    label(M.add(W.core.pos, [1, 0]), fixed ? "e1" : "b1", fixed ? "#4ade80" : "#e879f9", 10, 16);
+    label(M.add(W.core.pos, [0, 1]), fixed ? "e2" : "b2", fixed ? "#4ade80" : "#f472b6");
+    if (!fixed && !nearCore())
+      label(W.core.pos, "подлети к ядру", "#e879f9", -36, 42);
+  }
+
+  // зеркала
+  for (const m of S.mirrors) {
+    const h = M.scale(m.len / 2, u2(m.ang));
+    const a = toScr(M.sub(m.c, h)), b = toScr(M.add(m.c, h));
+    ctx.save();
+    ctx.strokeStyle = "#7dd3fc"; ctx.lineWidth = 6; ctx.lineCap = "round";
+    ctx.shadowColor = "#7dd3fc"; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    ctx.restore();
+    const knob = toScr(M.add(m.c, M.scale(m.len / 2 + 0.3, u2(m.ang))));
+    ctx.save(); ctx.fillStyle = "#0d1430"; ctx.strokeStyle = "#7dd3fc"; ctx.lineWidth = 2.6;
+    ctx.beginPath(); ctx.arc(knob.x, knob.y, 8, 0, 7); ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+
+  // щит финала
+  if (W.shield) {
+    const e1 = M.normalize(W.shield.dir);
+    const h = M.scale(W.shield.len / 2, e1);
+    const a = toScr(M.sub(W.shield.c, h)), b = toScr(M.add(W.shield.c, h));
+    ctx.save();
+    ctx.strokeStyle = S.conv.C ? "#a3e635" : "#5b6b9b"; ctx.lineWidth = 7; ctx.lineCap = "round";
+    ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 14;
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    ctx.restore();
+    label(M.add(W.shield.c, M.scale(1.2, e1)), "щит", S.conv.C ? "#a3e635" : "#5b6b9b");
+    if (S.station) {
+      const pulse = 0.28 + 0.05 * Math.sin(S.t * 3);
+      circle(S.station.pos, S.station.r + (S.powered ? pulse * 0.15 : 0), null,
+             S.powered ? "#4ade80" : "#f472b6", 3);
+      label(S.station.pos, "станция", S.powered ? "#4ade80" : "#f472b6", 12, 4);
+    }
+  }
+
+  // лазер
+  if (S.laserSegs.length) {
+    ctx.save();
+    ctx.strokeStyle = S.powered ? "#4ade80" : "#f87171";
+    ctx.lineWidth = 3; ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 14;
+    ctx.beginPath();
+    for (const [p1, p2] of S.laserSegs) {
+      const a = toScr(p1), b = toScr(p2);
+      ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+    }
+    ctx.stroke(); ctx.restore();
+    circle(W.laser.pos, 0.14, "#f87171", "#fecaca", 2);
+  }
+  for (const rc of (W.receivers || []))
+    circle(rc.pos, rc.r, S.powered ? "#14532d" : "#3b1c26", S.powered ? "#4ade80" : "#f472b6", 3);
+
+  // док
+  if (W.dock) {
+    const locked = (W.dock.needPower && !S.powered) || (W.dock.needBasis && S.basisStep < 3);
+    const col = S.docked ? "#4ade80" : (locked ? "#5b6b9b" : "#fbbf24");
+    const pulse = 0.06 * Math.sin(S.t * 3);
+    circle(W.dock.pos, W.dock.r + pulse, null, col, 3);
+    circle(W.dock.pos, W.dock.r * 0.55, null, col, 2);
+    let dl = "док";
+    if (locked) dl = "док 🔒";
+    else if (W.dock.arriveLen != null) dl = `док · импульс ${f2(W.dock.arriveLen)}`;
+    label(M.add(W.dock.pos, [0, W.dock.r]), dl, col, -12, -10);
+  }
+
+  // след, план, корабль
+  ctx.save();
+  for (const t of S.trail) {
+    const s = toScr(t.p);
+    ctx.globalAlpha = t.a * 0.5; ctx.fillStyle = "#38bdf8";
+    ctx.beginPath(); ctx.arc(s.x, s.y, 2.2, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+
+  if (S.L.flight) {
+    let tail = S.ship.pos.slice();
+    S.plan.legs.forEach((l, i) => {
+      arrow(tail, M.add(tail, l), "#2f6fdb", 3.5, null, 0.85);
+      tail = M.add(tail, l);
+    });
+    if (S.plan.cur) {
+      arrow(tail, M.add(tail, S.plan.cur), "#38bdf8", 4.5);
+      const tip = toScr(M.add(tail, S.plan.cur));
+      ctx.save(); ctx.fillStyle = "#0d1430"; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.arc(tip.x, tip.y, 7.5, 0, 7); ctx.fill(); ctx.stroke(); ctx.restore();
+    }
+    // итоговая сумма пути
+    if (S.plan.legs.length >= 1 && (S.plan.cur || S.plan.legs.length >= 2)) {
+      let total = [0, 0];
+      for (const l of S.plan.legs) total = M.add(total, l);
+      if (S.plan.cur) total = M.add(total, S.plan.cur);
+      arrow(S.ship.pos, M.add(S.ship.pos, total), "#8fa1d0", 2, [6, 6], 0.8);
+      label(M.add(S.ship.pos, M.scale(0.55, total)),
+            `итог = [${f2(total[0])}, ${f2(total[1])}]`, "#8fa1d0", 10, 20);
+    }
+  }
+
+  // корабль
+  {
+    const s = toScr(S.ship.pos);
+    ctx.save();
+    ctx.translate(s.x, s.y); ctx.rotate(-S.ship.ang + Math.PI / 2);
+    ctx.shadowColor = "#38bdf8"; ctx.shadowBlur = 14;
+    ctx.fillStyle = "#7dd3fc";
+    ctx.beginPath(); ctx.moveTo(0, -13); ctx.lineTo(9, 10); ctx.lineTo(0, 5);
+    ctx.lineTo(-9, 10); ctx.closePath(); ctx.fill();
+    if (S.flying) {
+      ctx.fillStyle = "#fb923c";
+      ctx.beginPath(); ctx.moveTo(-4, 10); ctx.lineTo(0, 17 + Math.random() * 5);
+      ctx.lineTo(4, 10); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // цели (низ слева)
+  ctx.save(); ctx.font = "14px system-ui";
+  S.L.objectives.forEach((o, i) => {
+    const done = !!S.objDone[o.id];
+    ctx.fillStyle = done ? "#4ade80" : "#9fb0dd";
+    ctx.fillText((done ? "✅ " : "◻ ") + o.text, 14, cv.height - 14 - (S.L.objectives.length - 1 - i) * 22);
+  });
+  if (G.mode === "endless") {
+    ctx.fillStyle = "#fbbf24"; ctx.font = "bold 15px system-ui";
+    ctx.fillText(`серия: ${G.streak}  ·  рекорд: ${save.endlessBest}`, 14, 24);
+  }
+  ctx.restore();
+
+  // сообщение
+  if (S.msg && S.msgT > 0) {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, S.msgT);
+    ctx.font = "bold 16px system-ui";
+    const w = ctx.measureText(S.msg.text).width;
+    const x = (cv.width - w) / 2, y = cv.height - 64;
+    ctx.fillStyle = "#0d1634ee";
+    ctx.beginPath(); ctx.roundRect(x - 16, y - 24, w + 32, 36, 10); ctx.fill();
+    ctx.strokeStyle = S.msg.good ? "#4ade80" : "#fbbf24"; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = S.msg.good ? "#bbf7d0" : "#fde68a";
+    ctx.fillText(S.msg.text, x, y);
+    ctx.restore();
+  }
+}
+
+// ============================================================
+// ЦЕРЕМОНИЯ, ЗВЁЗДЫ, ЖУРНАЛ
+// ============================================================
+function ceremony() {
+  const L = S.L;
+  const star2 = L.world.par != null ? S.fuelUsed <= L.world.par + 1e-9 : S.hintsUsed === 0;
+  const stars = { solve: true, eco: star2, q: false };
+  $("cer-title").textContent = L.zone + " — пройден!";
+  const lbl2 = L.world.par != null ? "топливо ≤ " + L.world.par : "без подсказок";
+  const render = () => {
+    $("cer-stars").innerHTML =
+      (stars.solve ? "★" : "<span class='off'>★</span>") +
+      (stars.eco ? "★" : "<span class='off'>★</span>") +
+      (stars.q ? "★" : "<span class='off'>★</span>");
+    $("cer-labels").textContent = "прошёл · " + lbl2 + " · понял смысл";
+    const n = (stars.solve ? 1 : 0) + (stars.eco ? 1 : 0) + (stars.q ? 1 : 0);
+    save.stars[G.level] = Math.max(save.stars[G.level] || 0, n);
+    save.unlocked = Math.max(save.unlocked, G.level + 1);
+    writeSave(); updateHudStars();
+  };
+  render();
+
   const jbox = $("cer-journal");
   if (L.journal && !save.journal.includes(G.level)) {
-    save.journal.push(G.level);
+    save.journal.push(G.level); writeSave();
+    jbox.style.display = "";
     jbox.innerHTML = `📓 <b>Новая запись в журнале:</b> ${L.journal.title}` +
       `<div class="frm">${L.journal.formula}</div>`;
-    jbox.style.display = "";
   } else jbox.style.display = "none";
 
-  // вопрос на третью звезду
-  const qbox = $("cer-question");
-  qbox.innerHTML = "";
+  const qbox = $("cer-question"); qbox.innerHTML = "";
   if (L.question) {
     const q = document.createElement("div"); q.className = "q";
     q.textContent = "⭐ Вопрос на третью звезду: " + L.question.q;
@@ -1669,38 +1669,18 @@ function finishLevel() {
       b.textContent = opt;
       b.onclick = () => {
         for (const bb of qbox.querySelectorAll("button")) bb.disabled = true;
-        if (i === L.question.correct) {
-          b.classList.add("right");
-          stars.question = true;
-        } else {
+        if (i === L.question.correct) { b.classList.add("right"); stars.q = true; }
+        else {
           b.classList.add("wrong");
           qbox.querySelectorAll("button")[L.question.correct].classList.add("right");
         }
-        renderStars(stars);
-        commitStars(stars);
+        render();
       };
       qbox.appendChild(b);
     });
   }
-  commitStars(stars);
+  $("cer-next").textContent = G.level + 1 < LEVELS.length ? "Дальше ▸" : "В меню";
   $("ceremony").classList.remove("hidden");
-}
-
-function renderStars(stars) {
-  const n = (stars.solve ? 1 : 0) + (stars.nohint ? 1 : 0) + (stars.question ? 1 : 0);
-  $("cer-stars").innerHTML =
-    `<span>${stars.solve ? "★" : "<span class='off'>★</span>"}</span>` +
-    `<span>${stars.nohint ? "★" : "<span class='off'>★</span>"}</span>` +
-    `<span>${stars.question ? "★" : "<span class='off'>★</span>"}</span>` +
-    `<div class="star-label">решил · без подсказок · понял смысл</div>`;
-}
-
-function commitStars(stars) {
-  const n = (stars.solve ? 1 : 0) + (stars.nohint ? 1 : 0) + (stars.question ? 1 : 0);
-  save.stars[G.level] = Math.max(save.stars[G.level] || 0, n);
-  save.unlocked = Math.max(save.unlocked, G.level + 1);
-  writeSave();
-  updateHud();
 }
 
 $("cer-next").addEventListener("click", () => {
@@ -1709,84 +1689,36 @@ $("cer-next").addEventListener("click", () => {
   else { refreshMenu(); show("menu"); }
 });
 
-// ============================================================
-// ФИНАЛЬНЫЙ ЭКРАН (уровень 11)
-// ============================================================
 function showFinal() {
   const total = Object.values(save.stars).reduce((s, x) => s + x, 0);
   $("cer-title").textContent = "🌌 Координатное ядро восстановлено!";
-  $("cer-stars").innerHTML = `<div style="font-size:20px">Собрано звёзд: ⭐ ${total} из ${(LEVELS.length - 1) * 3}</div>`;
+  $("cer-stars").innerHTML = `<div style="font-size:20px">⭐ ${total} из ${(LEVELS.length - 1) * 3}</div>`;
+  $("cer-labels").textContent = "";
   $("cer-journal").style.display = "";
   $("cer-journal").innerHTML =
-    `ИРИС: «Ортонорма» снова летит ровно. Ты прошёл весь путь:<br><br>` +
-    `<b>вектор → длина → нормализация → скалярное произведение → тень →<br>` +
-    `вычитание тени → Грам–Шмидт → зеркало → смена базиса → код</b><br><br>` +
+    `ИРИС: «Ортонорма» снова летит ровно. Ты прошёл путь:<br><br>` +
+    `<b>вектор → длина → сложение → нормализация → тень → разложение →<br>` +
+    `отражение → композиция → Грам–Шмидт → смена базиса</b><br><br>` +
     `<div class="frm">T = E @ TE @ E.T</div><br>` +
-    `ИРИС: ...стоп. Сканирую варп-двигатель. Странно: он стабилен только вдоль ` +
-    `ОСОБЫХ направлений — они не поворачиваются, только растягиваются...<br>` +
-    `<i>Продолжение следует: собственные векторы (урок 12 курса).</i><br><br>` +
-    `🔓 Открыт режим «Бесконечная лаборатория» — тренируйся в меню!`;
+    `ИРИС: ...стоп. Варп-двигатель стабилен только вдоль ОСОБЫХ направлений: ` +
+    `они не поворачиваются, только растягиваются...<br>` +
+    `<i>Продолжение: собственные векторы (урок 12 курса).</i><br><br>` +
+    `🔓 Открыт «Бесконечный полёт» — жми в меню!`;
   $("cer-question").innerHTML = "";
+  $("cer-next").textContent = "В меню";
   save.unlocked = Math.max(save.unlocked, LEVELS.length);
   writeSave();
   $("ceremony").classList.remove("hidden");
-  $("cer-next").textContent = "В меню";
 }
 
-// ============================================================
-// БЕСКОНЕЧНАЯ ЛАБОРАТОРИЯ
-// ============================================================
-function startEndless() {
-  G.mode = "endless";
-  G.endless.streak = 0;
-  endlessNext();
-}
-function endlessNext() {
-  closePuzzle();
-  if (G.endless.task) {
-    G.endless.streak++;
-    save.endlessBest = Math.max(save.endlessBest, G.endless.streak);
-    writeSave();
-  }
-  const gen = ENDLESS_TASKS[Math.floor(Math.random() * ENDLESS_TASKS.length)];
-  const t = gen.make();
-  G.endless.task = t;
-  openPuzzle({
-    type: "drag",
-    goalText: `Серия: ${G.endless.streak} (рекорд ${save.endlessBest}) — ${t.text}`,
-    vectors: t.vectors,
-    rail: t.rail || null,
-    meter: t.meter || false,
-    info(PZ) {
-      const v = PZ.v[PZ.v.length - 1];
-      let s = `v = <b>[${f2(v[0])}, ${f2(v[1])}]</b> · длина = <b>${f2(M.norm(v))}</b>`;
-      if (t.rail) s += `<br>тень: v · e = <b>${f2(M.dot(v, t.rail))}</b>`;
-      if (t.meter) s += `<br>a · b = <b>${f2(M.dot(PZ.v[0], PZ.v[1]))}</b>`;
-      return s;
-    },
-    check(PZ) { return t.check.call(t, PZ); },
-  });
-}
-function endEndless() {
-  G.mode = "campaign";
-  G.endless.task = null;
-  closePuzzle();
-  show("menu");
-  refreshMenu();
-}
-
-// ============================================================
-// ЖУРНАЛ
-// ============================================================
+// ---------------- журнал и подсказки ----------------
 function openJournal() {
-  const list = $("jr-list");
-  list.innerHTML = "";
+  const list = $("jr-list"); list.innerHTML = "";
   const entries = save.journal.slice().sort((a, b) => a - b);
-  if (!entries.length) {
-    list.innerHTML = `<div class="jr-empty">Пока пусто. Чини палубы — формулы будут появляться здесь.</div>`;
-  }
+  if (!entries.length)
+    list.innerHTML = `<div class="jr-empty">Пока пусто. Проходи сектора — формулы будут появляться здесь.</div>`;
   for (const li of entries) {
-    const J = LEVELS[li].journal;
+    const J = LEVELS[li] && LEVELS[li].journal;
     if (!J) continue;
     const div = document.createElement("div");
     div.className = "jr-entry";
@@ -1797,40 +1729,54 @@ function openJournal() {
   $("journal").classList.remove("hidden");
 }
 $("jr-close").addEventListener("click", () => $("journal").classList.add("hidden"));
+$("btn-journal").addEventListener("click", openJournal);
+$("btn-journal-menu").addEventListener("click", openJournal);
+
+$("btn-hint").addEventListener("click", () => {
+  if (!S || !S.L.hints.length) return;
+  if (S.hintLevel < S.L.hints.length) {
+    S.hintsUsed++;
+    $("hint-pop").textContent = "💡 " + S.L.hints[S.hintLevel];
+    $("hint-pop").classList.remove("hidden");
+    S.hintLevel++;
+  }
+});
+$("hint-pop").addEventListener("click", () => $("hint-pop").classList.add("hidden"));
 
 // ============================================================
-// НАВИГАЦИЯ ПО УРОВНЯМ
+// НАВИГАЦИЯ
 // ============================================================
 function gotoLevel(i) {
-  G.level = i;
-  G.mode = "campaign";
-  newRoom();
+  G.level = i; G.mode = "campaign";
   const L = LEVELS[i];
-  $("hud-deck").textContent = L.deck;
+  if (L.final) {
+    newState({ ...L, world: { ship: [0, 0] }, objectives: [], tools: [], hints: [], intro: [] });
+    show("game"); showFinal(); return;
+  }
+  newState(L);
+  $("hud-zone").textContent = L.zone;
   $("hud-name").textContent = L.name;
-  updateHud();
+  barSignature = ""; updateBar(); updateHudStars();
+  $("hint-pop").classList.add("hidden");
+  irisShow();
   show("game");
-  $("cer-next").textContent = "Дальше ▸";
-  if (L.puzzle.type === "final") { showFinal(); return; }
-  startDialog(L.intro);
 }
-function updateHud() {
+
+function updateHudStars() {
   const total = Object.values(save.stars).reduce((s, x) => s + x, 0);
   $("hud-stars").textContent = "★ " + total;
 }
 
 function buildLevelGrid() {
-  const grid = $("level-grid");
-  grid.innerHTML = "";
+  const grid = $("level-grid"); grid.innerHTML = "";
   LEVELS.forEach((L, i) => {
-    if (L.puzzle.type === "final") return;
+    if (L.final) return;
     const locked = i > save.unlocked;
     const card = document.createElement("div");
     card.className = "lvl-card" + (locked ? " locked" : "");
     const st = save.stars[i] || 0;
-    card.innerHTML = `<div class="deck">${L.deck}</div><b>${i + 1}. ${L.name}</b><br>` +
-      `<span class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</span>` +
-      (locked ? " 🔒" : "");
+    card.innerHTML = `<div class="deck">${L.zone}</div><b>${i + 1}. ${L.name}</b><br>` +
+      `<span class="stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</span>` + (locked ? " 🔒" : "");
     if (!locked) card.onclick = () => gotoLevel(i);
     grid.appendChild(card);
   });
@@ -1840,35 +1786,65 @@ function refreshMenu() {
   const done = save.unlocked >= LEVELS.length - 1;
   const be = $("btn-endless");
   be.disabled = !done;
-  be.textContent = done
-    ? `∞ Бесконечная лаборатория (рекорд: ${save.endlessBest})`
-    : "∞ Бесконечная лаборатория 🔒";
-  $("btn-continue").textContent =
-    save.unlocked === 0 ? "▶ Начать" : "▶ Продолжить (уровень " + (Math.min(save.unlocked, LEVELS.length - 2) + 1) + ")";
+  be.textContent = done ? `∞ Бесконечный полёт (рекорд: ${save.endlessBest})`
+                        : "∞ Бесконечный полёт 🔒";
+  $("btn-continue").textContent = save.unlocked === 0 ? "▶ Начать"
+    : "▶ Продолжить (сектор " + (Math.min(save.unlocked, LEVELS.length - 2) + 1) + ")";
 }
 
-// ---------------- кнопки меню ----------------
+// ---------------- бесконечный полёт ----------------
+function startEndless() {
+  G.mode = "endless"; G.streak = 0;
+  endlessLoad();
+}
+function endlessLoad() {
+  const gen = ENDLESS_GEN[Math.floor(Math.random() * ENDLESS_GEN.length)];
+  const L = gen();
+  newState(L);
+  $("hud-zone").textContent = L.zone;
+  $("hud-name").textContent = L.name;
+  barSignature = ""; updateBar();
+  $("iris").classList.add("hidden");
+  show("game");
+}
+function endlessNext() {
+  G.streak++;
+  save.endlessBest = Math.max(save.endlessBest, G.streak);
+  writeSave();
+  endlessLoad();
+}
+$("btn-endless").addEventListener("click", startEndless);
+
+// ---------------- меню ----------------
 $("btn-continue").addEventListener("click", () => gotoLevel(Math.min(save.unlocked, LEVELS.length - 1)));
 $("btn-levels").addEventListener("click", () => { buildLevelGrid(); show("levels"); });
 $("btn-back-menu").addEventListener("click", () => { refreshMenu(); show("menu"); });
-$("btn-journal-menu").addEventListener("click", openJournal);
-$("btn-journal").addEventListener("click", openJournal);
 $("btn-map").addEventListener("click", () => { buildLevelGrid(); show("levels"); });
 $("btn-how").addEventListener("click", () => $("howto").classList.remove("hidden"));
 $("how-close").addEventListener("click", () => $("howto").classList.add("hidden"));
-$("btn-endless").addEventListener("click", startEndless);
 
 // ---------------- главный цикл ----------------
-function loop() {
-  if (G.screen === "game" && G.room) drawRoom();
+let lastT = 0;
+function loop(t) {
+  const dt = Math.min(0.05, (t - lastT) / 1000 || 0.016);
+  lastT = t;
+  if (G.screen === "game" && S) { update(dt); draw(); }
   requestAnimationFrame(loop);
 }
 refreshMenu();
-loop();
+requestAnimationFrame(loop);
 
-// отладочный доступ для автотестов (не влияет на игру)
-window.__game = { G, save, gotoLevel, openPuzzle, closePuzzle, applyOp, checkPuzzle,
-                  afterChange, finishLevel, runConveyor, runCode, startEndless, LEVELS, M };
+// отладочный доступ для автотестов
+window.__game = {
+  get S() { return S; }, G, save, LEVELS, M,
+  gotoLevel, launch, resetShip, basisOp, convRun, startEndless,
+  tools: TOOL_DEFS, update, ceremony,
+  setCur(v) { S.plan.cur = v; updateBar(); },
+  commit() { TOOL_DEFS.commit.fn(); },
+  setMirror(i, ang) { S.mirrors[i].ang = ang; },
+  setBeam(v) { S.beam.v = v; },
+  convSet(slots) { S.conv.slots = slots.slice(); },
+};
 
 </script>
 </body>
